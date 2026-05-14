@@ -1,0 +1,18 @@
+:root {
+  color-scheme: dark;
+  --bg: #110906;
+  --panel: #1b120d;
+  --panel-soft: #241812;
+  --ink: #fff7e8;
+  --muted: #c7aa75;
+  --gold: #f0c64d;
+  --gold-dark: #a7791d;
+  --accent-highlight: rgba(132, 74, 255, 0.34);
+  --accent-highlight-strong: rgba(161, 92, 255, 0.62);
+  --accent-highlight-text: #fff7e8;
+  --wine: #7d2637;
+  --teal: #2f8b8a;
+  --line: rgba(240, 198, 77, 0.18);
+  --line-strong: rgba(240, 198, 77, 0.42);
+  --shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+}
