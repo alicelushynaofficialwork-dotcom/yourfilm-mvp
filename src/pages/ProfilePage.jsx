@@ -16,7 +16,7 @@ export default function ProfilePage() {
 
     return localStorage.getItem('yourfilm.lightTheme') === 'true' ? 'light' : 'dark';
   });
-  const { watchlist } = useWatchlist();
+  const { watchlist, removeMovie } = useWatchlist();
   const copy = ui[language] || ui.ru;
   const profile = useMemo(() => getUserProfileProgress(), []);
 
@@ -62,7 +62,13 @@ export default function ProfilePage() {
             любимые фильмы, эмоциональный кино-портрет и фильмы на потом.
           </p>
         </div>
-        <UserProfilePanel language={language} profile={profile} watchlist={watchlist} />
+        <UserProfilePanel
+          copy={copy}
+          language={language}
+          profile={profile}
+          watchlist={watchlist}
+          onRemoveMovie={removeMovie}
+        />
       </main>
     </div>
   );

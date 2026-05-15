@@ -7,7 +7,6 @@ import HowItWorks from '../components/home/HowItWorks.jsx';
 import MovieSearchPanel from '../components/home/MovieSearchPanel.jsx';
 import NewReleasesRail from '../components/home/NewReleasesRail.jsx';
 import RecommendationResult from '../components/chat/RecommendationResult.jsx';
-import WatchlistPreview from '../components/watchlist/WatchlistPreview.jsx';
 import { moods } from '../data/moods.js';
 import { movies } from '../data/movies.js';
 import { newReleases } from '../data/newReleases.js';
@@ -41,7 +40,7 @@ export default function HomePage() {
   const [skipIds, setSkipIds] = useState([]);
   const discoveryLayoutRef = useRef(null);
   const moodPanelRef = useRef(null);
-  const { watchlist, saveMovie, removeMovie, isMovieSaved } = useWatchlist();
+  const { watchlist, saveMovie, isMovieSaved } = useWatchlist();
   const copy = ui[language] || ui.ru;
 
   const filmOfTheDay = getFilmOfTheDay(movies);
@@ -234,7 +233,7 @@ export default function HomePage() {
         onLanguageChange={handleLanguageChange}
       />
       <main>
-        <HeroSection copy={copy} />
+        <HeroSection copy={copy} language={language} />
         <section className="discovery-layout" ref={discoveryLayoutRef} aria-label="Подбор фильма">
           <NewReleasesRail
             copy={copy}
@@ -277,7 +276,7 @@ export default function HomePage() {
               <FilmOfTheDay copy={copy} language={language} movie={filmOfTheDay} />
             </div>
             <div className="recommendation-stack">
-              <a className="watchlist-link recommendation-watchlist-link" href="#watchlist-preview">
+              <a className="watchlist-link recommendation-watchlist-link" href="/profile#watchlist-preview">
                 {copy.nav.watchlist} {watchlist.length > 0 ? `(${watchlist.length})` : ''}
               </a>
               <RecommendationResult
@@ -293,12 +292,6 @@ export default function HomePage() {
           </div>
         </section>
         <HowItWorks copy={copy} />
-        <WatchlistPreview
-          copy={copy}
-          language={language}
-          movies={watchlist}
-          onRemoveMovie={removeMovie}
-        />
       </main>
     </div>
   );

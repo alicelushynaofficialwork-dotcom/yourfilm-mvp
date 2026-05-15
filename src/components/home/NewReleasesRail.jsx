@@ -27,14 +27,24 @@ export default function NewReleasesRail({
         <p>{copy.releases.copy}</p>
       </div>
       <div className="release-feed-shell">
-        <button
-          className="release-arrow top"
-          type="button"
-          aria-label="Прокрутить новинки вверх"
-          onClick={() => scrollReleases(-1)}
-        >
-          ^
-        </button>
+        <div className="release-arrow-panel" aria-label="Управление лентой новинок">
+          <button
+            className="release-arrow"
+            type="button"
+            aria-label="Прокрутить новинки вверх"
+            onClick={() => scrollReleases(-1)}
+          >
+            ↑
+          </button>
+          <button
+            className="release-arrow"
+            type="button"
+            aria-label="Прокрутить новинки вниз"
+            onClick={() => scrollReleases(1)}
+          >
+            ↓
+          </button>
+        </div>
         <div className="release-feed" ref={releaseFeedRef} aria-label={copy.releases.feedLabel}>
           {releases.map((movie) => {
             const localizedMovie = localizeMovie(movie, language);
@@ -50,20 +60,12 @@ export default function NewReleasesRail({
                 <img src={movie.poster} alt={`${copy.result.posterAlt} ${localizedMovie.title}`} />
                 <span>{localizedMovie.title}</span>
                 <small>
-                  {movie.year} В· {localizedMovie.genres[0]}
+                  {movie.year} · {localizedMovie.genres[0]}
                 </small>
               </button>
             );
           })}
         </div>
-        <button
-          className="release-arrow bottom"
-          type="button"
-          aria-label="Прокрутить новинки вниз"
-          onClick={() => scrollReleases(1)}
-        >
-          v
-        </button>
       </div>
     </aside>
   );
