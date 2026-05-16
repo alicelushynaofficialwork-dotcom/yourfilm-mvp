@@ -9,6 +9,9 @@ export default function RecommendationResult({
   onAnotherMovie,
   onSaveMovie,
   onSelectMovie,
+  onRateMovie,
+  onToggleRatingTag,
+  ratings = {},
   isSaved,
 }) {
   const similarListRef = useRef(null);
@@ -36,7 +39,14 @@ export default function RecommendationResult({
   return (
     <section className="section-panel result-panel" id="recommendation">
       <p className="eyebrow">{copy.result.eyebrow}</p>
-      <MovieCard copy={copy} language={language} movie={recommendation.movie} />
+      <MovieCard
+        copy={copy}
+        language={language}
+        movie={recommendation.movie}
+        ratingData={ratings[recommendation.movie.id]}
+        onRateMovie={onRateMovie}
+        onToggleRatingTag={onToggleRatingTag}
+      />
       <div className="reason-grid">
         <article>
           <h3>{copy.result.why}</h3>

@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { movies } from '../../data/movies.js';
 import { userLevels, userTitles } from '../../data/profile.js';
 import { localizeMovie } from '../../utils/localization.js';
-import WatchlistPreview from '../watchlist/WatchlistPreview.jsx';
 
 const calendarWeekdays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 const watchedMovieSchedule = [
@@ -226,8 +225,9 @@ function getProfileSectionFromHash() {
   const hash = window.location.hash;
 
   if (hash === '#achievements') return 'my-achievements';
+  if (hash === '#public-profile') return 'my-public-profile';
   if (hash === '#statistics') return 'my-statistics';
-  if (hash === '#watchlist-preview' || hash === '#watch-later') return 'watch-later';
+  if (hash === '#watchlist-preview' || hash === '#watch-later' || hash === '#playlists') return 'my-playlists';
   if (hash === '#calendar') return 'my-calendar';
 
   return 'my-achievements';
@@ -264,6 +264,37 @@ export default function UserProfilePanel({
   const [shareFriend, setShareFriend] = useState('Мария');
   const [shareMessage, setShareMessage] = useState('Я посмотрела этот фильм сегодня, думаю тебе тоже может понравиться');
   const [shareStatus, setShareStatus] = useState('');
+  const [expandedPlaylistGroups, setExpandedPlaylistGroups] = useState({
+    personal: true,
+    themed: false,
+  });
+  const [openPlaylistMenu, setOpenPlaylistMenu] = useState('');
+  const [playlistNotice, setPlaylistNotice] = useState('');
+  const [createdPlaylists, setCreatedPlaylists] = useState([]);
+  const [profileVisibility, setProfileVisibility] = useState('friends');
+  const [selectedPlaylist, setSelectedPlaylist] = useState(null);
+  const [calendarViewFilter, setCalendarViewFilter] = useState('watched');
+  const [openCardMenu, setOpenCardMenu] = useState('');
+  const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
+  const [scheduleForm, setScheduleForm] = useState({
+    movieId: 'chef',
+    friend: 'Мария',
+    date: '2026-05-20',
+    time: '20:00',
+    comment: 'Думаю, нам понравится этот фильм',
+  });
+  const [plannedWatchEntries, setPlannedWatchEntries] = useState([
+    {
+      id: 'planned-chef-maria',
+      movieId: 'chef',
+      friend: 'Мария',
+      dateKey: '2026-05-20',
+      time: '20:00',
+      comment: 'Уютный фильм для совместного вечера',
+      status: 'ожидает подтверждения',
+    },
+  ]);
+  const [chatMessages, setChatMessages] = useState([]);
   const unlockedAchievements = profile.achievements.filter((achievement) => achievement.unlocked);
   const ratingScore = profile.xp * 10 + unlockedAchievements.length * 85 + profile.watchedCount * 40;
   const savedMovies = watchlist.length > 0
@@ -271,11 +302,111 @@ export default function UserProfilePanel({
     : profile.watchLater;
   const monthMovies = savedMovies.slice(0, 4);
   const profileSections = [
-    { id: 'my-achievements', label: 'Мои достижения' },
-    { id: 'watch-later', label: 'Смотреть позже' },
+    { id: 'my-achievements', label: 'Мой основной профиль' },
+    { id: 'my-public-profile', label: 'Мой публичный профиль' },
+    { id: 'my-playlists', label: 'Мои плейлисты' },
     { id: 'my-calendar', label: 'Мой календарь' },
     { id: 'my-statistics', label: 'Моя статистика' },
   ];
+  const fallbackWatchlistMovies = movies.filter((movie) =>
+    profile.watchLater.includes(localizeMovie(movie, language).title),
+  );
+  const watchLaterMovies = watchlist.length > 0 ? watchlist : fallbackWatchlistMovies;
+  const playlistGroups = [
+    {
+      id: 'personal',
+      title: 'Личные плейлисты',
+      description: 'Списки, которые собираешь для себя.',
+      playlists: [
+        {
+          id: 'watch-later-playlist',
+          title: 'Смотреть позже плейлист',
+          description: 'Фильмы, которые ты сохранила на потом.',
+          movies: watchLaterMovies,
+        },
+        ...createdPlaylists,
+      ],
+    },
+    {
+      id: 'themed',
+      title: 'Подборки по настроению',
+      description: 'Готовые группы, которые можно раскрывать и дополнять.',
+      playlists: [
+        {
+          id: 'cozy-evening-playlist',
+          title: 'Для уютного вечера',
+          description: 'Мягкие фильмы для спокойного просмотра.',
+          movies: movies.filter((movie) => ['chef', 'paddington-2', 'little-miss-sunshine'].includes(movie.id)),
+        },
+        {
+          id: 'motivation-playlist',
+          title: 'Для мотивации',
+          description: 'Истории, после которых хочется снова действовать.',
+          movies: movies.filter((movie) =>
+            ['the-secret-life-of-walter-mitty', 'the-pursuit-of-happyness'].includes(movie.id),
+          ),
+        },
+      ],
+    },
+  ];
+  const publicProfileFriends = ['Мария', 'София', 'Даниил'];
+  const openPublicPlaylists = playlistGroups.flatMap((group) =>
+    group.playlists.map((playlist) => ({
+      ...playlist,
+      groupTitle: group.title,
+    })),
+  );
+  const publicFriendRecommendations = [
+    {
+      friend: 'Мария',
+      movieId: 'chef',
+      comment:
+        'Мне понравилось, как фильм возвращает спокойствие через простые вещи. Кажется, тебе тоже зайдет для уютного вечера.',
+      sharedFrom: 'Поделилась через календарь просмотров',
+    },
+    {
+      friend: 'София',
+      movieId: 'la-la-land',
+      comment:
+        'Очень красивый фильм про мечту и выбор. Думаю, тебе понравится его атмосфера и мягкая меланхолия.',
+      sharedFrom: 'Поделилась через календарь просмотров',
+    },
+    {
+      friend: 'Даниил',
+      movieId: 'the-pursuit-of-happyness',
+      comment:
+        'Мне понравилась мотивация героя. Кажется, тебе тоже подойдет, когда хочется собраться и снова поверить в себя.',
+      sharedFrom: 'Поделился через календарь просмотров',
+    },
+  ];
+  const shareableMovies = [...movies];
+
+  function togglePlaylistGroup(groupId) {
+    setExpandedPlaylistGroups((currentGroups) => ({
+      ...currentGroups,
+      [groupId]: !currentGroups[groupId],
+    }));
+  }
+
+  function handleCreatePlaylist() {
+    const playlistNumber = createdPlaylists.length + 1;
+
+    setCreatedPlaylists((currentPlaylists) => [
+      ...currentPlaylists,
+      {
+        id: `custom-playlist-${playlistNumber}`,
+        title: `Новый плейлист ${playlistNumber}`,
+        description: 'Пустой плейлист для будущих фильмов.',
+        movies: [],
+      },
+    ]);
+    setPlaylistNotice(`Создан плейлист: Новый плейлист ${playlistNumber}`);
+    setOpenPlaylistMenu('');
+    setExpandedPlaylistGroups((currentGroups) => ({
+      ...currentGroups,
+      personal: true,
+    }));
+  }
   const allWatchedEntries = watchedMovieSchedule
     .map((entry) => {
       const movie = movies.find((item) => item.id === entry.movieId);
@@ -299,13 +430,52 @@ export default function UserProfilePanel({
   const watchedByDate = new Map(
     watchedEntries.map((entry) => [
       entry.dateKey,
+      { ...entry, kind: 'watched' },
+    ]),
+  );
+  const scheduledEntries = plannedWatchEntries
+    .map((entry) => {
+      const movie = movies.find((item) => item.id === entry.movieId);
+      const date = new Date(`${entry.dateKey}T${entry.time || '20:00'}`);
+
+      if (!movie) return null;
+
+      return {
+        ...entry,
+        date,
+        day: date.getDate(),
+        movie,
+        minutesWatched: movie.runtime ?? 120,
+        kind: 'planned',
+      };
+    })
+    .filter(Boolean)
+    .filter((entry) => isSameMonth(entry.date, calendarCursor));
+  const calendarEvents = calendarViewFilter === 'planned'
+    ? scheduledEntries
+    : calendarViewFilter === 'friends-history'
+      ? watchedEntries
+        .filter((entry) => entry.visibility !== 'private')
+        .map((entry) => ({ ...entry, kind: 'friends-history' }))
+      : watchedEntries.map((entry) => ({ ...entry, kind: 'watched' }));
+  const calendarEventsByDate = new Map(
+    calendarEvents.map((entry) => [
+      entry.dateKey,
       entry,
     ]),
   );
-  const calendarCells = getCalendarCells(calendarCursor, watchedByDate);
-  const selectedWatchedEntry = watchedByDate.get(selectedCalendarDate);
+  const calendarCells = getCalendarCells(calendarCursor, calendarEventsByDate);
+  const selectedCalendarEvent = calendarEventsByDate.get(selectedCalendarDate);
+  const selectedWatchedEntry =
+    selectedCalendarEvent?.kind === 'watched' || selectedCalendarEvent?.kind === 'friends-history'
+      ? selectedCalendarEvent
+      : null;
+  const selectedPlannedEntry = selectedCalendarEvent?.kind === 'planned' ? selectedCalendarEvent : null;
   const selectedWatchedMovie = selectedWatchedEntry
     ? localizeMovie(selectedWatchedEntry.movie, language)
+    : null;
+  const selectedPlannedMovie = selectedPlannedEntry
+    ? localizeMovie(selectedPlannedEntry.movie, language)
     : null;
   const calendarLocale = getCalendarLocale(language);
   const calendarMonthLabel = calendarCursor.toLocaleDateString(calendarLocale, {
@@ -482,6 +652,62 @@ export default function UserProfilePanel({
     setSelectedCalendarDate(formatDateKey(nextMonth));
   }
 
+  function openPlaylist(playlist) {
+    setSelectedPlaylist(playlist);
+    setPlaylistNotice(`Открыт список: ${playlist.title}`);
+  }
+
+  function openScheduleModal(movieId = scheduleForm.movieId, friend = scheduleForm.friend) {
+    setScheduleForm((currentForm) => ({
+      ...currentForm,
+      movieId,
+      friend,
+    }));
+    setScheduleModalOpen(true);
+  }
+
+  function handleScheduleSubmit() {
+    const movie = shareableMovies.find((item) => item.id === scheduleForm.movieId) ?? shareableMovies[0];
+    const localizedMovie = localizeMovie(movie, language);
+    const nextEntry = {
+      id: `planned-${movie.id}-${Date.now()}`,
+      movieId: movie.id,
+      friend: scheduleForm.friend,
+      dateKey: scheduleForm.date,
+      time: scheduleForm.time,
+      comment: scheduleForm.comment,
+      status: 'ожидает подтверждения',
+    };
+
+    setPlannedWatchEntries((currentEntries) => [...currentEntries, nextEntry]);
+    setChatMessages((currentMessages) => [
+      ...currentMessages,
+      `Алиса предлагает посмотреть фильм «${localizedMovie.title}» ${scheduleForm.date} в ${scheduleForm.time}. Комментарий: ${scheduleForm.comment}`,
+    ]);
+    setCalendarViewFilter('planned');
+    setCalendarCursor(new Date(`${scheduleForm.date}T00:00`));
+    setSelectedCalendarDate(scheduleForm.date);
+    setScheduleModalOpen(false);
+  }
+
+  function handleCardAction(action, movieTitle) {
+    setPlaylistNotice(`${movieTitle}: ${action}`);
+    setOpenCardMenu('');
+  }
+
+  function cycleEntryVisibility(entry) {
+    const nextVisibility = entry.visibility === 'private'
+      ? 'friends'
+      : entry.visibility === 'friends'
+        ? 'public'
+        : 'private';
+
+    setHistoryPrivacy((current) => ({
+      ...current,
+      [entry.dateKey]: nextVisibility,
+    }));
+  }
+
   const aiProfilePanel = (
     <div className="ai-profile-panel">
       <div className="leaderboard-heading">
@@ -595,6 +821,29 @@ export default function UserProfilePanel({
               <span>{completedMovies.length} досмотрено</span>
             </div>
           </div>
+          <div className="calendar-view-filter" aria-label="Фильтр календаря">
+            <button
+              className={calendarViewFilter === 'watched' ? 'active' : ''}
+              type="button"
+              onClick={() => setCalendarViewFilter('watched')}
+            >
+              Посмотреть мои просмотры
+            </button>
+            <button
+              className={calendarViewFilter === 'planned' ? 'active' : ''}
+              type="button"
+              onClick={() => setCalendarViewFilter('planned')}
+            >
+              Посмотреть запланированные просмотры
+            </button>
+            <button
+              className={calendarViewFilter === 'friends-history' ? 'active' : ''}
+              type="button"
+              onClick={() => setCalendarViewFilter('friends-history')}
+            >
+              История просмотров с друзьями
+            </button>
+          </div>
           <div className="calendar-widget">
             <div className="calendar-widget-main">
               <div className="calendar-widget-header">
@@ -698,6 +947,54 @@ export default function UserProfilePanel({
                     </div>
                   </div>
                   <div>
+                    <div className="movie-card-actions-row">
+                      <button
+                        className="visibility-icon-button"
+                        type="button"
+                        aria-label="Изменить видимость"
+                        onClick={() => cycleEntryVisibility(selectedWatchedEntry)}
+                      >
+                        {selectedWatchedEntry.visibility === 'private'
+                          ? '◑'
+                          : selectedWatchedEntry.visibility === 'friends'
+                            ? '◉'
+                            : '◎'}
+                      </button>
+                      <div className="card-menu-wrap">
+                        <button
+                          className="playlist-menu-button"
+                          type="button"
+                          aria-label="Открыть действия с фильмом"
+                          onClick={() =>
+                            setOpenCardMenu(openCardMenu === selectedWatchedEntry.dateKey ? '' : selectedWatchedEntry.dateKey)
+                          }
+                        >
+                          ⋯
+                        </button>
+                        {openCardMenu === selectedWatchedEntry.dateKey ? (
+                          <div className="playlist-menu-popover card-action-popover">
+                            <button
+                              type="button"
+                              onClick={() => handleCardAction('сохранить в плейлист', selectedWatchedMovie.title)}
+                            >
+                              Сохранить в плейлист
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleCardAction('отправить другу', selectedWatchedMovie.title)}
+                            >
+                              Отправить другу
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => openScheduleModal(selectedWatchedEntry.movie.id)}
+                            >
+                              Запланировать просмотр
+                            </button>
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
                     <span>
                       {selectedWatchedEntry.date.toLocaleDateString(calendarLocale, {
                         day: 'numeric',
@@ -789,11 +1086,53 @@ export default function UserProfilePanel({
                     </div>
                   </div>
                 </>
+              ) : selectedPlannedMovie ? (
+                <div className="planned-watch-card">
+                  <img
+                    src={selectedPlannedMovie.poster}
+                    alt={`${copy.result.posterAlt} ${selectedPlannedMovie.title}`}
+                  />
+                  <div>
+                    <span>Запланированный просмотр</span>
+                    <h3>{selectedPlannedMovie.title}</h3>
+                    <p>{selectedPlannedEntry.comment}</p>
+                    <dl className="watch-detail-list">
+                      <div>
+                        <dt>Дата</dt>
+                        <dd>{selectedPlannedEntry.dateKey}</dd>
+                      </div>
+                      <div>
+                        <dt>Время</dt>
+                        <dd>{selectedPlannedEntry.time}</dd>
+                      </div>
+                      <div>
+                        <dt>С кем</dt>
+                        <dd>{selectedPlannedEntry.friend}</dd>
+                      </div>
+                      <div>
+                        <dt>Статус</dt>
+                        <dd>{selectedPlannedEntry.status}</dd>
+                      </div>
+                    </dl>
+                    <button
+                      className="history-share-button"
+                      type="button"
+                      onClick={() =>
+                        setChatMessages((currentMessages) => [
+                          ...currentMessages,
+                          `Чат по фильму «${selectedPlannedMovie.title}» открыт с ${selectedPlannedEntry.friend}.`,
+                        ])
+                      }
+                    >
+                      Открыть чат
+                    </button>
+                  </div>
+                </div>
               ) : (
                 <div className="calendar-empty-selection">
                   <span>Дата выбрана</span>
                   <h3>В этот день просмотра нет</h3>
-                  <p>Выбери дату с отметкой, чтобы увидеть фильм из истории просмотров.</p>
+                  <p>Выбери дату с отметкой, чтобы увидеть фильм или запланированный просмотр.</p>
                 </div>
               )}
             </article>
@@ -947,14 +1286,126 @@ export default function UserProfilePanel({
         </div>
       ) : null}
 
-      {activeProfileSection === 'watch-later' ? (
-        <div className="profile-watch-later">
-          <WatchlistPreview
-            copy={copy}
-            language={language}
-            movies={watchlist}
-            onRemoveMovie={onRemoveMovie}
-          />
+      {activeProfileSection === 'my-playlists' ? (
+        <div className="profile-playlists">
+          <div className="leaderboard-heading">
+            <span>Мои плейлисты</span>
+            <strong>{playlistGroups.reduce((total, group) => total + group.playlists.length, 0)} плейлиста</strong>
+          </div>
+          <p className="playlist-helper">
+            Здесь собраны все твои списки фильмов. Открывай группы, смотри плейлист
+            «Смотреть позже» и создавай новые списки через меню с тремя точками.
+          </p>
+          {playlistNotice ? <p className="playlist-notice">{playlistNotice}</p> : null}
+          <div className="playlist-group-list">
+            {playlistGroups.map((group) => (
+              <section className="playlist-group" key={group.id}>
+                <button
+                  className="playlist-group-toggle"
+                  type="button"
+                  aria-expanded={expandedPlaylistGroups[group.id]}
+                  onClick={() => togglePlaylistGroup(group.id)}
+                >
+                  <span>{expandedPlaylistGroups[group.id] ? '−' : '+'}</span>
+                  <div>
+                    <strong>{group.title}</strong>
+                    <small>{group.description}</small>
+                  </div>
+                  <b>{group.playlists.length}</b>
+                </button>
+                {expandedPlaylistGroups[group.id] ? (
+                  <div className="playlist-card-grid">
+                    {group.playlists.map((playlist) => {
+                      const previewMovies = playlist.movies.slice(0, 4);
+
+                      return (
+                        <article className="playlist-card" key={playlist.id}>
+                          <button
+                            className="playlist-cover-stack playlist-cover-button"
+                            type="button"
+                            onClick={() => openPlaylist(playlist)}
+                            aria-label={`Открыть список ${playlist.title}`}
+                          >
+                            {previewMovies.length > 0 ? (
+                              previewMovies.map((movie) => {
+                                const localizedMovie = localizeMovie(movie, language);
+
+                                return (
+                                  <img
+                                    src={movie.poster}
+                                    alt={`${copy.result.posterAlt} ${localizedMovie.title}`}
+                                    key={movie.id}
+                                  />
+                                );
+                              })
+                            ) : (
+                              <div className="playlist-empty-cover">+</div>
+                            )}
+                          </button>
+                          <div className="playlist-card-body">
+                            <div className="playlist-card-top">
+                              <div>
+                                <h3>{playlist.title}</h3>
+                                <p>{playlist.description}</p>
+                              </div>
+                              <button
+                                className="open-list-button"
+                                type="button"
+                                onClick={() => openPlaylist(playlist)}
+                              >
+                                Открыть список
+                              </button>
+                              <div className="playlist-menu">
+                                <button
+                                  className="playlist-menu-button"
+                                  type="button"
+                                  aria-label="Открыть меню плейлиста"
+                                  aria-expanded={openPlaylistMenu === playlist.id}
+                                  onClick={() =>
+                                    setOpenPlaylistMenu(openPlaylistMenu === playlist.id ? '' : playlist.id)
+                                  }
+                                >
+                                  ⋯
+                                </button>
+                                {openPlaylistMenu === playlist.id ? (
+                                  <div className="playlist-menu-popover">
+                                    <button type="button" onClick={handleCreatePlaylist}>
+                                      Создать плейлист
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        openPlaylist(playlist);
+                                        setOpenPlaylistMenu('');
+                                      }}
+                                    >
+                                      Открыть плейлист
+                                    </button>
+                                  </div>
+                                ) : null}
+                              </div>
+                            </div>
+                            <div className="playlist-meta-row">
+                              <span>{playlist.movies.length} фильмов</span>
+                              <span>Плейлист</span>
+                            </div>
+                            <div className="playlist-movie-list">
+                              {playlist.movies.slice(0, 3).map((movie) => {
+                                const localizedMovie = localizeMovie(movie, language);
+
+                                return <span key={movie.id}>{localizedMovie.title}</span>;
+                              })}
+                              {playlist.movies.length === 0 ? <span>Пока пусто</span> : null}
+                            </div>
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
+                ) : null}
+              </section>
+            ))}
+          </div>
         </div>
       ) : null}
 
@@ -1070,8 +1521,210 @@ export default function UserProfilePanel({
         </div>
       ) : null}
 
+      {activeProfileSection === 'my-public-profile' ? (
+        <div className="profile-public-profile">
+          <div className="friend-profile-card public-profile-card">
+            <div className="friend-avatar">{profile.name.slice(0, 1)}</div>
+            <div>
+              <p className="eyebrow">Мой публичный профиль</p>
+              <h2>{profile.name}</h2>
+              <p>{profile.favoriteGenres.join(' · ')} · {profile.favoriteMood}</p>
+              <span>{profile.title}</span>
+            </div>
+          </div>
+
+          <div className="profile-social-card">
+            <div className="leaderboard-heading">
+              <span>Видимость профиля</span>
+              <strong>
+                {profileVisibility === 'friends'
+                  ? 'Открыт для друзей'
+                  : profileVisibility === 'public'
+                    ? 'Открыт для всех'
+                    : 'Только для себя'}
+              </strong>
+            </div>
+            <div className="profile-visibility-controls" aria-label="Видимость профиля">
+              <button
+                className={profileVisibility === 'friends' ? 'active' : ''}
+                type="button"
+                onClick={() => setProfileVisibility('friends')}
+              >
+                Для друзей
+              </button>
+              <button
+                className={profileVisibility === 'public' ? 'active' : ''}
+                type="button"
+                onClick={() => setProfileVisibility('public')}
+              >
+                Для всех
+              </button>
+              <button
+                className={profileVisibility === 'private' ? 'active' : ''}
+                type="button"
+                onClick={() => setProfileVisibility('private')}
+              >
+                Для себя
+              </button>
+            </div>
+            <div className="profile-friends-summary">
+              <article>
+                <span>Друзья</span>
+                <strong>128</strong>
+                <small>добавлено в YourFilm</small>
+              </article>
+              <article>
+                <span>Все друзья</span>
+                <strong>{publicProfileFriends.join(' · ')}</strong>
+                <a href="/friends">Открыть всех друзей</a>
+              </article>
+            </div>
+          </div>
+
+          <div className="friends-grid">
+            <article className="friend-section-card friend-achievements-card">
+              <div className="leaderboard-heading">
+                <span>Публичная аналитика</span>
+                <strong>#128 · {ratingScore}</strong>
+              </div>
+              <div className="friend-rating-strip">
+                <article>
+                  <span>Рейтинг</span>
+                  <strong>{ratingScore}</strong>
+                </article>
+                <article>
+                  <span>Друзья</span>
+                  <strong>128</strong>
+                </article>
+                <article>
+                  <span>Фильмы</span>
+                  <strong>{profile.watchedCount}</strong>
+                </article>
+              </div>
+              <div className="friend-public-tags">
+                <span>Титулы</span>
+                <strong>{profile.title}</strong>
+                {profile.earnedTitles?.slice(0, 3).map((title) => (
+                  <strong key={title}>{title}</strong>
+                ))}
+              </div>
+              <div className="friend-public-tags">
+                <span>Награды</span>
+                {unlockedAchievements.slice(0, 4).map((achievement) => (
+                  <strong key={achievement.id}>{achievement.title}</strong>
+                ))}
+              </div>
+            </article>
+
+            <article className="friend-section-card">
+              <div className="leaderboard-heading">
+                <span>Рекомендации от друзей</span>
+                <strong>{publicFriendRecommendations.length} совета</strong>
+              </div>
+              <div className="friend-movie-list">
+                {publicFriendRecommendations.map((recommendation) => {
+                  const movie = movies.find((item) => item.id === recommendation.movieId);
+
+                  if (!movie) return null;
+
+                  const localizedMovie = localizeMovie(movie, language);
+
+                  return (
+                    <div className="friend-movie-card friend-recommendation-card" key={recommendation.movieId}>
+                      <img src={movie.poster} alt={localizedMovie.title} />
+                      <div>
+                        <strong>{localizedMovie.title}</strong>
+                        <small>
+                          {recommendation.friend} советует · {recommendation.sharedFrom}
+                        </small>
+                        <p>{recommendation.comment}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </article>
+
+            <article className="friend-section-card">
+              <div className="leaderboard-heading">
+                <span>Открытый watchlist</span>
+                <strong>{openPublicPlaylists.length} плейлиста</strong>
+              </div>
+              <div className="public-playlist-list">
+                {openPublicPlaylists.map((playlist) => (
+                  <div className="public-playlist-card" key={playlist.id}>
+                    <div className="friend-watchlist-stack compact-watchlist-stack">
+                      {playlist.movies.slice(0, 3).map((movie) => {
+                        const localizedMovie = localizeMovie(movie, language);
+
+                        return <img src={movie.poster} alt={localizedMovie.title} key={movie.id} />;
+                      })}
+                    </div>
+                    <div>
+                      <strong>{playlist.title}</strong>
+                      <p>{playlist.description}</p>
+                      <small>{playlist.groupTitle} · {playlist.movies.length} фильмов</small>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </article>
+
+            <article className="friend-section-card watch-party-card">
+              <div className="leaderboard-heading">
+                <span>Совместный просмотр</span>
+                <strong>Запланировать</strong>
+              </div>
+              <h3>Вечерний просмотр с друзьями</h3>
+              <p>Выбери друзей рядом и создай общий просмотр из открытого плейлиста.</p>
+              <div className="watch-party-friends">
+                {publicProfileFriends.map((friend) => (
+                  <button type="button" key={friend}>
+                    {friend}
+                  </button>
+                ))}
+              </div>
+              <button className="primary-action" type="button">
+                Запланировать просмотр
+              </button>
+            </article>
+
+            <article className="friend-section-card share-card">
+              <div className="leaderboard-heading">
+                <span>Отправка фильмов и списков</span>
+                <strong>Для друзей</strong>
+              </div>
+              <label>
+                <span>Друг</span>
+                <select value={shareFriend} onChange={(event) => setShareFriend(event.target.value)}>
+                  {publicProfileFriends.map((friend) => (
+                    <option key={friend}>{friend}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                <span>Сообщение</span>
+                <textarea value={shareMessage} onChange={(event) => setShareMessage(event.target.value)} />
+              </label>
+              <button
+                className="primary-action"
+                type="button"
+                onClick={() => setShareStatus(`Список отправлен: ${shareFriend}`)}
+              >
+                Отправить фильм или список
+              </button>
+              {shareStatus ? <em>{shareStatus}</em> : null}
+            </article>
+          </div>
+        </div>
+      ) : null}
+
       {activeProfileSection === 'my-achievements' ? (
         <>
+      <div className="profile-subblock-heading">
+        <span>Мои достижения</span>
+        <strong>Рейтинг, титулы и награды</strong>
+      </div>
       <div className="current-rating-card">
         <div className="rank-position">
           <span>Место</span>
@@ -1319,3 +1972,4 @@ export default function UserProfilePanel({
     </section>
   );
 }
+

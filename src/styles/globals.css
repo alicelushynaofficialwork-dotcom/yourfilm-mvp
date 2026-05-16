@@ -67,12 +67,13 @@ a {
 
 .nav-links {
   display: grid;
-  grid-template-columns: minmax(280px, 1fr) minmax(96px, auto) minmax(460px, 1fr);
+  grid-template-columns: minmax(280px, 1fr) minmax(230px, auto) minmax(460px, 1fr);
   align-items: center;
   gap: 14px;
 }
 
 .primary-nav,
+.account-nav,
 .header-controls {
   display: flex;
   flex-wrap: wrap;
@@ -100,8 +101,15 @@ a {
   min-width: 0;
 }
 
+.account-nav {
+  justify-self: center;
+  flex-wrap: nowrap;
+  width: max-content;
+}
+
 .nav-links a,
 .profile-nav-link,
+.friends-nav-link,
 .primary-action,
 .ghost-action,
 .chip,
@@ -121,7 +129,6 @@ a {
 }
 
 .profile-nav-link {
-  justify-self: center;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -147,6 +154,23 @@ a {
   white-space: nowrap;
 }
 
+.friends-nav-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  min-height: 48px;
+  border: 1px solid rgba(240, 198, 77, 0.34);
+  border-radius: 999px;
+  background:
+    linear-gradient(135deg, rgba(240, 198, 77, 0.18), rgba(132, 74, 255, 0.2)),
+    rgba(255, 255, 255, 0.06);
+  color: var(--ink);
+  padding: 0 20px;
+  font-weight: 950;
+  text-decoration: none;
+}
+
 .nav-links a:hover,
 .nav-links a:focus-visible,
 .nav-links a.active {
@@ -157,7 +181,10 @@ a {
 
 .profile-nav-link:hover,
 .profile-nav-link:focus-visible,
-.profile-nav-link.active {
+.profile-nav-link.active,
+.friends-nav-link:hover,
+.friends-nav-link:focus-visible,
+.friends-nav-link.active {
   color: #ffd84a;
   background:
     radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.9), transparent 26%),
@@ -175,7 +202,10 @@ a {
 
 .app-shell:not(.light-theme) .profile-nav-link:hover,
 .app-shell:not(.light-theme) .profile-nav-link:focus-visible,
-.app-shell:not(.light-theme) .profile-nav-link.active {
+.app-shell:not(.light-theme) .profile-nav-link.active,
+.app-shell:not(.light-theme) .friends-nav-link:hover,
+.app-shell:not(.light-theme) .friends-nav-link:focus-visible,
+.app-shell:not(.light-theme) .friends-nav-link.active {
   color: #ffd84a;
 }
 
@@ -1023,6 +1053,10 @@ h3 {
 .profile-statistics-section,
 .profile-month-movies,
 .profile-watch-later,
+.profile-playlists,
+.profile-public-profile,
+.profile-social-card,
+.profile-subblock-heading,
 .profile-emotional-section,
 .profile-insights,
 .ai-profile-panel,
@@ -1087,6 +1121,314 @@ h3 {
     rgba(255, 247, 232, 0.08);
   box-shadow: inset 0 0 0 1px rgba(240, 198, 77, 0.22);
   outline: none;
+}
+
+.profile-social-card,
+.profile-subblock-heading {
+  display: grid;
+  gap: 14px;
+  border: 1px solid rgba(255, 247, 232, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 18px;
+}
+
+.profile-public-profile {
+  display: grid;
+  gap: 16px;
+}
+
+.profile-visibility-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.profile-visibility-controls button {
+  min-height: 40px;
+  border: 1px solid rgba(132, 74, 255, 0.34);
+  border-radius: 999px;
+  background: rgba(132, 74, 255, 0.14);
+  color: var(--ink);
+  padding: 0 14px;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.profile-visibility-controls button:hover,
+.profile-visibility-controls button:focus-visible,
+.profile-visibility-controls button.active {
+  border-color: rgba(240, 198, 77, 0.76);
+  background: rgba(240, 198, 77, 0.16);
+}
+
+.profile-friends-summary {
+  display: grid;
+  grid-template-columns: minmax(160px, 0.35fr) minmax(0, 1fr);
+  gap: 12px;
+}
+
+.profile-friends-summary article {
+  display: grid;
+  gap: 6px;
+  border: 1px solid rgba(240, 198, 77, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.045);
+  padding: 14px;
+}
+
+.profile-friends-summary span,
+.profile-subblock-heading span {
+  color: var(--accent-highlight-text);
+  font-size: 0.82rem;
+  font-weight: 1000;
+  text-transform: uppercase;
+}
+
+.profile-friends-summary strong,
+.profile-subblock-heading strong {
+  color: var(--ink);
+  font-size: 1.2rem;
+}
+
+.profile-friends-summary small,
+.profile-friends-summary a {
+  color: rgba(255, 247, 232, 0.68);
+}
+
+.profile-playlists {
+  display: grid;
+  gap: 16px;
+  border: 1px solid rgba(255, 247, 232, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.035);
+  padding: 18px;
+}
+
+.playlist-helper,
+.playlist-notice {
+  margin: 0;
+  color: rgba(255, 247, 232, 0.74);
+  line-height: 1.6;
+}
+
+.playlist-notice {
+  width: max-content;
+  max-width: 100%;
+  border: 1px solid rgba(240, 198, 77, 0.28);
+  border-radius: 8px;
+  background: rgba(240, 198, 77, 0.12);
+  padding: 10px 12px;
+  font-weight: 800;
+}
+
+.playlist-group-list {
+  display: grid;
+  gap: 12px;
+}
+
+.playlist-group {
+  border: 1px solid rgba(240, 198, 77, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.035);
+  overflow: hidden;
+}
+
+.playlist-group-toggle {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  border: 0;
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--ink);
+  padding: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.playlist-group-toggle > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(240, 198, 77, 0.34);
+  border-radius: 999px;
+  background: rgba(132, 74, 255, 0.18);
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+
+.playlist-group-toggle strong,
+.playlist-card h3 {
+  color: var(--ink);
+}
+
+.playlist-group-toggle small,
+.playlist-card p,
+.playlist-meta-row,
+.playlist-movie-list span {
+  color: rgba(255, 247, 232, 0.68);
+}
+
+.playlist-group-toggle b {
+  border: 1px solid rgba(132, 74, 255, 0.42);
+  border-radius: 999px;
+  background: rgba(132, 74, 255, 0.18);
+  padding: 5px 10px;
+}
+
+.playlist-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 14px;
+}
+
+.playlist-card {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 14px;
+  border: 1px solid rgba(255, 247, 232, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.045);
+  padding: 12px;
+}
+
+.playlist-cover-stack {
+  position: relative;
+  min-height: 112px;
+}
+
+.playlist-cover-stack img,
+.playlist-empty-cover {
+  position: absolute;
+  top: 0;
+  width: 74px;
+  aspect-ratio: 2 / 3;
+  border: 2px solid rgba(255, 247, 232, 0.16);
+  border-radius: 7px;
+  object-fit: cover;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+.playlist-cover-stack img:nth-child(1) {
+  left: 0;
+  z-index: 4;
+}
+
+.playlist-cover-stack img:nth-child(2) {
+  left: 26px;
+  z-index: 3;
+}
+
+.playlist-cover-stack img:nth-child(3) {
+  left: 52px;
+  z-index: 2;
+}
+
+.playlist-cover-stack img:nth-child(4) {
+  left: 78px;
+  z-index: 1;
+}
+
+.playlist-empty-cover {
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(132, 74, 255, 0.16);
+  color: var(--ink);
+  font-size: 2rem;
+  font-weight: 900;
+}
+
+.playlist-card-body {
+  display: grid;
+  gap: 10px;
+}
+
+.playlist-card-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.playlist-card h3,
+.playlist-card p {
+  margin: 0;
+}
+
+.playlist-menu {
+  position: relative;
+}
+
+.playlist-menu-button {
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(240, 198, 77, 0.24);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.playlist-menu-popover {
+  position: absolute;
+  top: 42px;
+  right: 0;
+  z-index: 4;
+  display: grid;
+  gap: 6px;
+  width: 190px;
+  border: 1px solid rgba(240, 198, 77, 0.22);
+  border-radius: 8px;
+  background: rgba(24, 14, 12, 0.98);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.36);
+  padding: 8px;
+}
+
+.playlist-menu-popover button {
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #fff7e8;
+  padding: 9px 10px;
+  text-align: left;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.playlist-menu-popover button:hover,
+.playlist-menu-popover button:focus-visible {
+  background: rgba(240, 198, 77, 0.14);
+}
+
+.playlist-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.playlist-movie-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.playlist-movie-list span {
+  border: 1px solid rgba(132, 74, 255, 0.28);
+  border-radius: 999px;
+  background: rgba(132, 74, 255, 0.12);
+  padding: 5px 8px;
+  font-size: 0.78rem;
+  font-weight: 800;
 }
 
 .rating-season,
@@ -2832,6 +3174,93 @@ article.movie-card .movie-card-tooltip p {
   line-height: 1.5;
 }
 
+.personal-rating {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+  border: 1px solid rgba(240, 198, 77, 0.18);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(240, 198, 77, 0.1), rgba(132, 74, 255, 0.1)),
+    rgba(255, 255, 255, 0.04);
+  padding: 14px;
+}
+
+.personal-rating-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.personal-rating-header strong,
+.personal-rating-header span {
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.star-rating {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.star-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(240, 198, 77, 0.35);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 247, 232, 0.42);
+  cursor: pointer;
+  font-size: 1.25rem;
+  line-height: 1;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, color 160ms ease;
+}
+
+.star-button:hover,
+.star-button:focus-visible,
+.star-button.active {
+  border-color: rgba(240, 198, 77, 0.84);
+  background: rgba(240, 198, 77, 0.16);
+  color: #ffd84a;
+  transform: translateY(-1px);
+}
+
+article.movie-card .rating-explanation {
+  margin: 0;
+  color: rgba(255, 247, 232, 0.74);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.rating-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.rating-tag {
+  border: 1px solid rgba(132, 74, 255, 0.42);
+  border-radius: 999px;
+  background: rgba(132, 74, 255, 0.16);
+  color: var(--ink);
+  padding: 7px 10px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.rating-tag:hover,
+.rating-tag:focus-visible,
+.rating-tag.active {
+  border-color: rgba(240, 198, 77, 0.76);
+  background: rgba(240, 198, 77, 0.18);
+}
+
 .light-theme .movie-card-tooltip,
 .cartoon-theme .movie-card-tooltip {
   border-color: rgba(255, 181, 76, 0.44);
@@ -2852,6 +3281,35 @@ article.movie-card .movie-card-tooltip p {
 .light-theme article.movie-card .movie-card-tooltip p,
 .cartoon-theme article.movie-card .movie-card-tooltip p {
   color: #241208;
+}
+
+.light-theme .personal-rating,
+.cartoon-theme .personal-rating {
+  border-color: rgba(122, 91, 22, 0.18);
+  background:
+    linear-gradient(135deg, rgba(255, 191, 47, 0.16), rgba(133, 73, 255, 0.1)),
+    rgba(255, 255, 255, 0.58);
+}
+
+.light-theme .star-button,
+.cartoon-theme .star-button {
+  background: rgba(255, 255, 255, 0.62);
+  color: rgba(43, 22, 8, 0.32);
+}
+
+.light-theme .star-button.active,
+.cartoon-theme .star-button.active,
+.light-theme .star-button:hover,
+.cartoon-theme .star-button:hover,
+.light-theme .star-button:focus-visible,
+.cartoon-theme .star-button:focus-visible {
+  color: #c68000;
+}
+
+.light-theme .rating-tag,
+.cartoon-theme .rating-tag {
+  background: rgba(255, 255, 255, 0.58);
+  color: #2b1608;
 }
 
 .movie-meta,
@@ -3072,6 +3530,560 @@ article.movie-card .movie-card-tooltip p {
   right: 0;
 }
 
+.community-section {
+  display: grid;
+  gap: 22px;
+  margin-top: 28px;
+  border: 1px solid rgba(255, 247, 232, 0.08);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 80% 12%, rgba(132, 74, 255, 0.16), transparent 22rem),
+    radial-gradient(circle at 14% 22%, rgba(47, 139, 138, 0.14), transparent 20rem),
+    rgba(255, 255, 255, 0.035);
+  box-shadow: var(--shadow);
+  padding: 24px;
+}
+
+.community-heading {
+  max-width: 860px;
+}
+
+.community-heading h2 {
+  margin: 10px 0;
+  font-size: clamp(2rem, 4vw, 4.2rem);
+  line-height: 0.98;
+}
+
+.community-heading p:last-child {
+  color: rgba(255, 247, 232, 0.72);
+  line-height: 1.65;
+}
+
+.community-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.9fr 0.95fr;
+  gap: 14px;
+}
+
+.community-panel {
+  border: 1px solid rgba(255, 247, 232, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.045);
+  padding: 16px;
+}
+
+.community-panel h3 {
+  margin: 0 0 14px;
+  font-size: 1.1rem;
+}
+
+.collection-list,
+.community-user-list,
+.community-movie-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.collection-card,
+.community-user-card,
+.community-movie-row {
+  border: 1px solid rgba(240, 198, 77, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--ink);
+  padding: 12px;
+}
+
+.collection-card {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.collection-card:hover,
+.collection-card:focus-visible {
+  border-color: rgba(240, 198, 77, 0.72);
+  background: rgba(240, 198, 77, 0.14);
+}
+
+.collection-card span,
+.community-user-card small,
+.community-user-card p,
+.community-movie-row span {
+  color: rgba(255, 247, 232, 0.68);
+  line-height: 1.45;
+}
+
+.community-user-card {
+  display: grid;
+  gap: 8px;
+}
+
+.community-user-card div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.community-user-card div span {
+  border: 1px solid rgba(132, 74, 255, 0.42);
+  border-radius: 999px;
+  background: rgba(132, 74, 255, 0.16);
+  padding: 4px 8px;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.community-user-card p {
+  margin: 0;
+}
+
+.community-movie-row {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+}
+
+.community-movie-row img {
+  width: 56px;
+  aspect-ratio: 2 / 3;
+  border-radius: 7px;
+  object-fit: cover;
+}
+
+.community-movie-row div {
+  display: grid;
+  gap: 4px;
+}
+
+.friends-page {
+  display: grid;
+  gap: 24px;
+  padding-top: 42px;
+}
+
+.friends-hero {
+  max-width: 1060px;
+}
+
+.friends-hero h1 {
+  margin: 10px 0 14px;
+  font-size: clamp(3rem, 7vw, 7rem);
+  line-height: 0.95;
+}
+
+.friends-hero p:last-child {
+  max-width: 860px;
+  color: rgba(255, 247, 232, 0.78);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.friends-layout {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.32fr) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.friends-list-panel,
+.friend-detail-panel,
+.friend-section-card,
+.friend-profile-card,
+.my-profile-preview-card,
+.public-playlist-card {
+  border: 1px solid rgba(255, 247, 232, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: var(--shadow);
+}
+
+.friends-list-panel,
+.friend-detail-panel {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  padding: 18px;
+}
+
+.add-friend-button,
+.friend-row {
+  border: 1px solid rgba(240, 198, 77, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.055);
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.add-friend-button {
+  min-height: 44px;
+}
+
+.friend-notice {
+  margin: 0;
+  border: 1px solid rgba(240, 198, 77, 0.26);
+  border-radius: 8px;
+  background: rgba(240, 198, 77, 0.12);
+  color: rgba(255, 247, 232, 0.78);
+  padding: 10px;
+  font-weight: 800;
+}
+
+.friend-list {
+  display: grid;
+  gap: 10px;
+}
+
+.friend-row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  text-align: left;
+}
+
+.friend-row > span,
+.friend-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(240, 198, 77, 0.42);
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffe86c, #ffbf2f 58%, #d88600);
+  color: #180d06;
+  font-weight: 1000;
+}
+
+.friend-row > span {
+  width: 42px;
+  height: 42px;
+}
+
+.friend-row small,
+.friend-profile-card p,
+.friend-profile-card span,
+.friend-section-card p,
+.friend-movie-card small,
+.friend-recommendation-card p,
+.public-playlist-card p,
+.public-playlist-card small,
+.my-profile-preview-card small {
+  color: rgba(255, 247, 232, 0.68);
+}
+
+.friend-row:hover,
+.friend-row:focus-visible,
+.friend-row.active,
+.add-friend-button:hover,
+.add-friend-button:focus-visible {
+  border-color: rgba(240, 198, 77, 0.72);
+  background: rgba(240, 198, 77, 0.14);
+}
+
+.friend-profile-card {
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  padding: 18px;
+}
+
+.friend-avatar {
+  width: 90px;
+  height: 90px;
+  font-size: 2.2rem;
+}
+
+.friend-profile-card h2,
+.friend-profile-card p {
+  margin: 0;
+}
+
+.friend-profile-card h2 {
+  font-size: clamp(2rem, 4vw, 4rem);
+  line-height: 1;
+}
+
+.friend-profile-card span {
+  display: inline-flex;
+  width: max-content;
+  max-width: 100%;
+  margin-top: 10px;
+  border: 1px solid rgba(132, 74, 255, 0.36);
+  border-radius: 999px;
+  background: rgba(132, 74, 255, 0.16);
+  padding: 6px 10px;
+  font-weight: 800;
+}
+
+.friends-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.friend-section-card {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.friend-movie-list {
+  display: grid;
+  gap: 10px;
+}
+
+.friend-movie-card {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  border: 1px solid rgba(240, 198, 77, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.045);
+  padding: 10px;
+}
+
+.friend-movie-card img {
+  width: 70px;
+  aspect-ratio: 2 / 3;
+  border-radius: 7px;
+  object-fit: cover;
+}
+
+.friend-movie-card div {
+  display: grid;
+  gap: 5px;
+}
+
+.friend-recommendation-card p {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.friend-watchlist-stack {
+  position: relative;
+  min-height: 150px;
+}
+
+.friend-watchlist-stack img {
+  position: absolute;
+  top: 0;
+  width: 96px;
+  aspect-ratio: 2 / 3;
+  border: 2px solid rgba(255, 247, 232, 0.18);
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.32);
+}
+
+.friend-watchlist-stack img:nth-child(1) {
+  left: 0;
+  z-index: 3;
+}
+
+.friend-watchlist-stack img:nth-child(2) {
+  left: 54px;
+  z-index: 2;
+}
+
+.friend-watchlist-stack img:nth-child(3) {
+  left: 108px;
+  z-index: 1;
+}
+
+.public-playlist-list {
+  display: grid;
+  gap: 10px;
+}
+
+.public-playlist-card {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+}
+
+.public-playlist-card div:last-child {
+  display: grid;
+  gap: 5px;
+}
+
+.public-playlist-card p {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.compact-watchlist-stack {
+  min-height: 86px;
+}
+
+.compact-watchlist-stack img {
+  width: 56px;
+}
+
+.compact-watchlist-stack img:nth-child(2) {
+  left: 34px;
+}
+
+.compact-watchlist-stack img:nth-child(3) {
+  left: 68px;
+}
+
+.watch-party-card h3 {
+  margin: 0;
+  font-size: 1.55rem;
+}
+
+.watch-party-friends {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.watch-party-friends button {
+  border: 1px solid rgba(132, 74, 255, 0.42);
+  border-radius: 999px;
+  background: rgba(132, 74, 255, 0.16);
+  color: var(--ink);
+  padding: 8px 11px;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.watch-party-friends button:hover,
+.watch-party-friends button:focus-visible {
+  border-color: rgba(240, 198, 77, 0.74);
+  background: rgba(240, 198, 77, 0.16);
+}
+
+.share-card label {
+  display: grid;
+  gap: 6px;
+}
+
+.share-card label span {
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.share-card select,
+.share-card textarea {
+  width: 100%;
+  border: 1px solid rgba(255, 247, 232, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--ink);
+  padding: 10px 12px;
+}
+
+.share-card textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.share-card em {
+  color: var(--accent-highlight-text);
+  font-style: normal;
+  font-weight: 900;
+}
+
+.my-profile-preview-card {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+}
+
+.my-profile-preview-card .friend-avatar {
+  width: 56px;
+  height: 56px;
+  font-size: 1.35rem;
+}
+
+.my-profile-preview-card p,
+.my-profile-preview-card strong,
+.my-profile-preview-card small {
+  margin: 0;
+}
+
+.my-profile-preview-card strong {
+  color: var(--ink);
+  font-size: 1.08rem;
+}
+
+.my-profile-preview-stats {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.my-profile-preview-stats span {
+  border: 1px solid rgba(132, 74, 255, 0.36);
+  border-radius: 999px;
+  background: rgba(132, 74, 255, 0.14);
+  color: var(--ink);
+  padding: 5px 8px;
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.friend-achievements-card {
+  grid-column: 1 / -1;
+}
+
+.friend-rating-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.friend-rating-strip article {
+  display: grid;
+  gap: 5px;
+  border: 1px solid rgba(240, 198, 77, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.045);
+  padding: 12px;
+}
+
+.friend-rating-strip span,
+.friend-public-tags span {
+  color: var(--accent-highlight-text);
+  font-size: 0.78rem;
+  font-weight: 1000;
+  text-transform: uppercase;
+}
+
+.friend-rating-strip strong {
+  color: var(--ink);
+  font-size: 1.35rem;
+}
+
+.friend-public-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.friend-public-tags strong {
+  border: 1px solid rgba(132, 74, 255, 0.38);
+  border-radius: 999px;
+  background: rgba(132, 74, 255, 0.16);
+  color: var(--ink);
+  padding: 7px 10px;
+  font-size: 0.86rem;
+}
+
 .similar-arrow:hover,
 .similar-arrow:focus-visible {
   border-color: #7b35ff;
@@ -3241,6 +4253,19 @@ body.cartoon-theme-page {
 .light-theme .profile-statistics-section,
 .light-theme .profile-month-movies,
 .light-theme .profile-watch-later,
+.light-theme .profile-playlists,
+.light-theme .playlist-group,
+.light-theme .playlist-card,
+.light-theme .profile-social-card,
+.light-theme .profile-subblock-heading,
+.light-theme .friends-list-panel,
+.light-theme .friend-detail-panel,
+.light-theme .friend-section-card,
+.light-theme .friend-profile-card,
+.light-theme .friend-movie-card,
+.light-theme .friend-rating-strip article,
+.light-theme .my-profile-preview-card,
+.light-theme .public-playlist-card,
 .light-theme .profile-emotional-section,
 .light-theme .profile-insights,
 .light-theme .ai-profile-panel,
@@ -3266,6 +4291,8 @@ body.cartoon-theme-page {
 .light-theme .level-step,
 .light-theme .title-card,
 .light-theme .section-panel,
+.light-theme .community-section,
+.light-theme .community-panel,
 .light-theme .new-releases-rail,
 .light-theme .assistant-preview,
 .light-theme .step-card,
@@ -3316,6 +4343,24 @@ body.cartoon-theme-page {
 .light-theme .reason-grid p,
 .light-theme .trailer-panel p:last-child,
 .light-theme .similar-panel p,
+.light-theme .community-heading p:last-child,
+.light-theme .collection-card span,
+.light-theme .community-user-card small,
+.light-theme .community-user-card p,
+.light-theme .community-movie-row span,
+.light-theme .friends-hero p:last-child,
+.light-theme .friend-notice,
+.light-theme .friend-row small,
+.light-theme .friend-profile-card p,
+.light-theme .friend-profile-card span,
+.light-theme .friend-section-card p,
+.light-theme .friend-movie-card small,
+.light-theme .friend-recommendation-card p,
+.light-theme .public-playlist-card p,
+.light-theme .public-playlist-card small,
+.light-theme .my-profile-preview-card small,
+.light-theme .profile-friends-summary small,
+.light-theme .profile-friends-summary a,
 .light-theme .step-card p,
 .light-theme .empty-state,
 .light-theme .saved-movie p,
@@ -3323,6 +4368,21 @@ body.cartoon-theme-page {
 .light-theme .search-field small,
 .light-theme .release-story small,
 .light-theme .search-result small {
+  color: rgba(43, 22, 8, 0.72);
+}
+
+.cartoon-theme .friend-notice,
+.cartoon-theme .friend-row small,
+.cartoon-theme .friend-profile-card p,
+.cartoon-theme .friend-profile-card span,
+.cartoon-theme .friend-section-card p,
+.cartoon-theme .friend-movie-card small,
+.cartoon-theme .friend-recommendation-card p,
+.cartoon-theme .public-playlist-card p,
+.cartoon-theme .public-playlist-card small,
+.cartoon-theme .my-profile-preview-card small,
+.cartoon-theme .profile-friends-summary small,
+.cartoon-theme .profile-friends-summary a {
   color: rgba(43, 22, 8, 0.72);
 }
 
@@ -3482,8 +4542,67 @@ body.cartoon-theme-page {
   color: rgba(43, 22, 8, 0.72);
 }
 
+.light-theme .playlist-helper,
+.light-theme .playlist-notice,
+.light-theme .playlist-group-toggle small,
+.light-theme .playlist-card p,
+.light-theme .playlist-meta-row,
+.light-theme .playlist-movie-list span,
+.cartoon-theme .playlist-helper,
+.cartoon-theme .playlist-notice,
+.cartoon-theme .playlist-group-toggle small,
+.cartoon-theme .playlist-card p,
+.cartoon-theme .playlist-meta-row,
+.cartoon-theme .playlist-movie-list span {
+  color: rgba(43, 22, 8, 0.72);
+}
+
+.light-theme .playlist-group-toggle,
+.light-theme .playlist-menu-button,
+.light-theme .playlist-empty-cover,
+.cartoon-theme .playlist-group-toggle,
+.cartoon-theme .playlist-menu-button,
+.cartoon-theme .playlist-empty-cover {
+  background: rgba(255, 255, 255, 0.55);
+  color: #2b1608;
+}
+
+.light-theme .playlist-menu-popover,
+.cartoon-theme .playlist-menu-popover {
+  border-color: rgba(122, 91, 22, 0.22);
+  background: rgba(255, 248, 219, 0.98);
+}
+
+.light-theme .playlist-menu-popover button,
+.cartoon-theme .playlist-menu-popover button {
+  color: #2b1608;
+}
+
+.light-theme .friends-nav-link,
+.light-theme .add-friend-button,
+.light-theme .friend-row,
+.light-theme .watch-party-friends button,
+.light-theme .my-profile-preview-stats span,
+.light-theme .share-card select,
+.light-theme .share-card textarea,
+.light-theme .profile-visibility-controls button,
+.cartoon-theme .friends-nav-link,
+.cartoon-theme .add-friend-button,
+.cartoon-theme .friend-row,
+.cartoon-theme .watch-party-friends button,
+.cartoon-theme .my-profile-preview-stats span,
+.cartoon-theme .share-card select,
+.cartoon-theme .share-card textarea,
+.cartoon-theme .profile-visibility-controls button {
+  background: rgba(255, 255, 255, 0.55);
+  color: #2b1608;
+}
+
 .light-theme .similar-panel,
 .light-theme .trailer-panel,
+.light-theme .collection-card,
+.light-theme .community-user-card,
+.light-theme .community-movie-row,
 .light-theme .similar-card {
   background: rgba(255, 255, 255, 0.55);
   color: var(--ink);
@@ -3511,6 +4630,19 @@ body.cartoon-theme-page {
 .cartoon-theme .profile-statistics-section,
 .cartoon-theme .profile-month-movies,
 .cartoon-theme .profile-watch-later,
+.cartoon-theme .profile-playlists,
+.cartoon-theme .playlist-group,
+.cartoon-theme .playlist-card,
+.cartoon-theme .profile-social-card,
+.cartoon-theme .profile-subblock-heading,
+.cartoon-theme .friends-list-panel,
+.cartoon-theme .friend-detail-panel,
+.cartoon-theme .friend-section-card,
+.cartoon-theme .friend-profile-card,
+.cartoon-theme .friend-movie-card,
+.cartoon-theme .friend-rating-strip article,
+.cartoon-theme .my-profile-preview-card,
+.cartoon-theme .public-playlist-card,
 .cartoon-theme .profile-emotional-section,
 .cartoon-theme .profile-insights,
 .cartoon-theme .ai-profile-panel,
@@ -3536,6 +4668,8 @@ body.cartoon-theme-page {
 .cartoon-theme .level-step,
 .cartoon-theme .title-card,
 .cartoon-theme .section-panel,
+.cartoon-theme .community-section,
+.cartoon-theme .community-panel,
 .cartoon-theme .new-releases-rail,
 .cartoon-theme .assistant-preview,
 .cartoon-theme .step-card,
@@ -3559,6 +4693,19 @@ body.cartoon-theme-page {
 .cartoon-theme .profile-statistics-section,
 .cartoon-theme .profile-month-movies,
 .cartoon-theme .profile-watch-later,
+.cartoon-theme .profile-playlists,
+.cartoon-theme .playlist-group,
+.cartoon-theme .playlist-card,
+.cartoon-theme .profile-social-card,
+.cartoon-theme .profile-subblock-heading,
+.cartoon-theme .friends-list-panel,
+.cartoon-theme .friend-detail-panel,
+.cartoon-theme .friend-section-card,
+.cartoon-theme .friend-profile-card,
+.cartoon-theme .friend-movie-card,
+.cartoon-theme .friend-rating-strip article,
+.cartoon-theme .my-profile-preview-card,
+.cartoon-theme .public-playlist-card,
 .cartoon-theme .profile-emotional-section,
 .cartoon-theme .profile-insights,
 .cartoon-theme .ai-profile-panel,
@@ -3633,6 +4780,11 @@ body.cartoon-theme-page {
   .discovery-layout,
   .mvp-grid,
   .movie-card,
+  .community-grid,
+  .friends-layout,
+  .friends-grid,
+  .friend-profile-card,
+  .public-playlist-card,
   .reason-grid,
   .trailer-panel,
   .step-grid,
@@ -3678,6 +4830,10 @@ body.cartoon-theme-page {
   .calendar-widget,
   .history-toolbar,
   .history-advanced-filters,
+  .profile-friends-summary,
+  .friend-rating-strip,
+  .playlist-card-grid,
+  .playlist-card,
   .profile-calendar-grid,
   .month-movie-list,
   .watch-stat-grid,
@@ -3702,11 +4858,16 @@ body.cartoon-theme-page {
     justify-self: start;
   }
 
+  .playlist-cover-stack {
+    min-height: 126px;
+  }
+
   .nav-links {
     grid-template-columns: 1fr;
   }
 
   .primary-nav,
+  .account-nav,
   .header-controls {
     justify-content: flex-start;
   }
@@ -3765,6 +4926,10 @@ body.cartoon-theme-page {
     top: auto;
     bottom: 12px;
     width: auto;
+  }
+
+  .community-section {
+    padding: 16px;
   }
 
   .saved-movie {

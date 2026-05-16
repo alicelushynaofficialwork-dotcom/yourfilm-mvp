@@ -31,6 +31,7 @@ export default function Header({
     { href: '/#recommendation', label: copy.nav.recommendation },
     { href: '/#film-of-day', label: copy.nav.filmOfDay },
     { href: '/#how-it-works', label: copy.nav.howItWorks },
+    { href: '/#community', label: 'Сообщество' },
   ];
   const currentPath = window.location.pathname;
 
@@ -51,9 +52,14 @@ export default function Header({
             </a>
           ))}
         </div>
+        <div className="account-nav">
         <a className={currentPath === '/profile' ? 'profile-nav-link active' : 'profile-nav-link'} href="/profile#achievements">
           ТВОЙ-ПРОФИЛЬ
         </a>
+          <a className={currentPath === '/friends' ? 'friends-nav-link active' : 'friends-nav-link'} href="/friends">
+            Друзья
+          </a>
+        </div>
         <div className="header-controls">
           <div className="theme-select control-dropdown">
             <span>{copy.nav.theme}</span>

@@ -6,6 +6,7 @@ import FilmOfTheDay from '../components/home/FilmOfTheDay.jsx';
 import HowItWorks from '../components/home/HowItWorks.jsx';
 import MovieSearchPanel from '../components/home/MovieSearchPanel.jsx';
 import NewReleasesRail from '../components/home/NewReleasesRail.jsx';
+import CommunitySection from '../components/home/CommunitySection.jsx';
 import RecommendationResult from '../components/chat/RecommendationResult.jsx';
 import { moods } from '../data/moods.js';
 import { movies } from '../data/movies.js';
@@ -14,6 +15,7 @@ import { getFilmOfTheDay } from '../data/filmOfTheDay.js';
 import { getRecommendation } from '../services/recommendationEngine.js';
 import { getGenres, getYears, searchMovies } from '../services/movieCatalog.js';
 import { useWatchlist } from '../hooks/useWatchlist.js';
+import { useMovieRatings } from '../hooks/useMovieRatings.js';
 import { ui } from '../data/translations.js';
 
 export default function HomePage() {
@@ -41,6 +43,7 @@ export default function HomePage() {
   const discoveryLayoutRef = useRef(null);
   const moodPanelRef = useRef(null);
   const { watchlist, saveMovie, isMovieSaved } = useWatchlist();
+  const { ratings, rateMovie, toggleTag } = useMovieRatings();
   const copy = ui[language] || ui.ru;
 
   const filmOfTheDay = getFilmOfTheDay(movies);
@@ -73,6 +76,7 @@ export default function HomePage() {
       customMood,
       moodId: selectedMood,
       movieId: selectedSearchMovieId || selectedReleaseId || autoSelectedSearchMovieId,
+      ratings,
       skipIds,
     }),
     [
@@ -82,6 +86,7 @@ export default function HomePage() {
       selectedReleaseId,
       selectedSearchMovieId,
       skipIds,
+      ratings,
     ],
   );
 
@@ -286,12 +291,16 @@ export default function HomePage() {
                 onAnotherMovie={handleAnotherMovie}
                 onSaveMovie={saveMovie}
                 onSelectMovie={handleSearchMovieSelect}
+                onRateMovie={rateMovie}
+                onToggleRatingTag={toggleTag}
+                ratings={ratings}
                 isSaved={recommendation ? isMovieSaved(recommendation.movie.id) : false}
               />
             </div>
           </div>
         </section>
         <HowItWorks copy={copy} />
+        <CommunitySection language={language} movies={[...newReleases, ...movies]} />
       </main>
     </div>
   );
