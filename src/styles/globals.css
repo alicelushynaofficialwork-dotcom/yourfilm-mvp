@@ -67,7 +67,7 @@ a {
 
 .nav-links {
   display: grid;
-  grid-template-columns: minmax(280px, 1fr) auto auto;
+  grid-template-columns: minmax(280px, 1fr) minmax(96px, auto) minmax(460px, 1fr);
   align-items: center;
   gap: 14px;
 }
@@ -121,16 +121,30 @@ a {
 }
 
 .profile-nav-link {
-  justify-self: end;
+  justify-self: center;
   display: inline-flex;
   align-items: center;
-  min-width: 96px;
-  border: 1px solid rgba(132, 74, 255, 0.28);
-  background: rgba(132, 74, 255, 0.09);
-  color: rgba(255, 247, 232, 0.82);
-  padding: 0 16px;
-  font-weight: 800;
+  justify-content: center;
+  width: 142px;
+  height: 58px;
+  min-width: 142px;
+  min-height: 58px;
+  border: 2px solid #180d06;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.9), transparent 26%),
+    linear-gradient(135deg, #ffe86c, #ffbf2f 58%, #d88600);
+  color: #180d06;
+  padding: 0 18px;
+  font-weight: 1000;
+  font-size: 0.76rem;
+  line-height: 1.02;
+  text-align: center;
   text-decoration: none;
+  box-shadow:
+    inset 0 1px 4px rgba(255, 255, 255, 0.48),
+    0 8px 20px rgba(0, 0, 0, 0.24);
+  white-space: nowrap;
 }
 
 .nav-links a:hover,
@@ -144,9 +158,25 @@ a {
 .profile-nav-link:hover,
 .profile-nav-link:focus-visible,
 .profile-nav-link.active {
-  color: var(--ink);
-  background: var(--accent-highlight);
-  box-shadow: inset 0 0 0 1px var(--accent-highlight-strong);
+  color: #ffd84a;
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.9), transparent 26%),
+    linear-gradient(135deg, #221506, #5a3600 58%, #120b04);
+  box-shadow:
+    inset 0 1px 4px rgba(255, 255, 255, 0.48),
+    0 10px 24px rgba(0, 0, 0, 0.28);
+  transform: translateY(-1px);
+}
+
+.app-shell:not(.light-theme) .profile-nav-link,
+.app-shell:not(.light-theme) .profile-nav-link:not(:hover):not(:focus-visible):not(.active) {
+  color: #180d06;
+}
+
+.app-shell:not(.light-theme) .profile-nav-link:hover,
+.app-shell:not(.light-theme) .profile-nav-link:focus-visible,
+.app-shell:not(.light-theme) .profile-nav-link.active {
+  color: #ffd84a;
 }
 
 .watchlist-link {
@@ -428,7 +458,7 @@ h3 {
   backdrop-filter: blur(14px);
 }
 
-.hero-watch-now div {
+.hero-watch-now > div:first-child {
   display: grid;
   gap: 2px;
 }
@@ -458,6 +488,49 @@ h3 {
   font-weight: 900;
   text-decoration: none;
   white-space: nowrap;
+}
+
+.watch-now-covers {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  height: 46px;
+  margin-left: auto;
+  isolation: isolate;
+}
+
+.watch-now-covers img {
+  width: 34px;
+  height: 46px;
+  border: 2px solid rgba(255, 248, 219, 0.9);
+  border-radius: 6px;
+  object-fit: cover;
+  background: #050505;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+}
+
+.watch-now-covers img + img {
+  margin-left: -13px;
+}
+
+.watch-now-covers img:nth-child(1) {
+  z-index: 4;
+  transform: rotate(-4deg);
+}
+
+.watch-now-covers img:nth-child(2) {
+  z-index: 3;
+  transform: rotate(3deg);
+}
+
+.watch-now-covers img:nth-child(3) {
+  z-index: 2;
+  transform: rotate(-2deg);
+}
+
+.watch-now-covers img:nth-child(4) {
+  z-index: 1;
+  transform: rotate(4deg);
 }
 
 .hero-poster-tile {
@@ -949,6 +1022,8 @@ h3 {
 .profile-calendar,
 .profile-statistics-section,
 .profile-month-movies,
+.profile-watch-later,
+.profile-emotional-section,
 .profile-insights,
 .ai-profile-panel,
 .compact-awards,
@@ -979,21 +1054,26 @@ h3 {
   flex-wrap: wrap;
   gap: 8px;
   width: 100%;
-  padding: 8px;
-  border: 1px solid rgba(240, 198, 77, 0.24);
+  padding: 10px;
+  border: 1px solid rgba(240, 198, 77, 0.42);
   border-radius: 8px;
-  background: rgba(255, 247, 232, 0.055);
+  background:
+    linear-gradient(135deg, rgba(132, 74, 255, 0.22), rgba(47, 139, 138, 0.12)),
+    rgba(255, 247, 232, 0.07);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 247, 232, 0.04),
+    0 14px 34px rgba(0, 0, 0, 0.22);
 }
 
 .profile-section-list button {
   flex: 1 1 170px;
-  min-height: 42px;
-  border: 1px solid transparent;
+  min-height: 46px;
+  border: 1px solid rgba(255, 247, 232, 0.08);
   border-radius: 8px;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.045);
   color: var(--ink);
   padding: 0 14px;
-  font-weight: 800;
+  font-weight: 900;
   text-align: center;
   cursor: pointer;
 }
@@ -1001,8 +1081,11 @@ h3 {
 .profile-section-list button:hover,
 .profile-section-list button:focus-visible,
 .profile-section-list button.active {
-  border-color: rgba(240, 198, 77, 0.58);
-  background: rgba(240, 198, 77, 0.16);
+  border-color: rgba(240, 198, 77, 0.86);
+  background:
+    linear-gradient(135deg, rgba(240, 198, 77, 0.22), rgba(132, 74, 255, 0.16)),
+    rgba(255, 247, 232, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(240, 198, 77, 0.22);
   outline: none;
 }
 
@@ -1128,7 +1211,9 @@ h3 {
 
 .profile-calendar,
 .profile-statistics-section,
-.profile-month-movies {
+.profile-month-movies,
+.profile-watch-later,
+.profile-emotional-section {
   display: grid;
   gap: 12px;
   position: relative;
@@ -1141,14 +1226,20 @@ h3 {
 }
 
 .profile-calendar-grid,
-.month-movie-list {
+.month-movie-list,
+.watch-stat-grid,
+.month-movie-highlights,
+.emotional-change-list {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
 }
 
 .profile-calendar-grid article,
-.month-movie-list article {
+.month-movie-list article,
+.watch-stat-grid article,
+.month-movie-highlights article,
+.emotional-change-list article {
   display: grid;
   gap: 7px;
   min-height: 94px;
@@ -1161,7 +1252,10 @@ h3 {
 }
 
 .profile-calendar-grid span,
-.month-movie-list span {
+.month-movie-list span,
+.watch-stat-grid span,
+.month-movie-highlights span,
+.emotional-change-list span {
   width: max-content;
   max-width: 100%;
   border: 1px solid var(--accent-highlight-strong);
@@ -1174,14 +1268,52 @@ h3 {
 }
 
 .profile-calendar-grid strong,
-.month-movie-list strong {
+.month-movie-list strong,
+.watch-stat-grid strong,
+.month-movie-highlights strong,
+.emotional-change-list h3 {
   color: var(--ink);
   line-height: 1.2;
 }
 
+.watch-calendar-summary,
+.watch-month-summary {
+  display: grid;
+  gap: 10px;
+  border: 1px solid rgba(255, 247, 232, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 247, 232, 0.76);
+  padding: 13px;
+  line-height: 1.55;
+}
+
+.watch-calendar-summary div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.watch-calendar-summary span {
+  border: 1px solid var(--accent-highlight-strong);
+  border-radius: 8px;
+  background: rgba(132, 74, 255, 0.12);
+  color: var(--accent-highlight-text);
+  font-weight: 900;
+  padding: 5px 9px;
+}
+
+.watch-stat-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.month-movie-highlights {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .calendar-widget {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 14px;
   align-items: stretch;
 }
@@ -1309,19 +1441,83 @@ h3 {
 
 .calendar-selected-movie {
   display: grid;
-  grid-template-columns: 112px minmax(0, 1fr);
-  gap: 14px;
+  grid-template-columns: minmax(150px, 0.38fr) minmax(0, 1fr);
+  gap: 18px;
   align-content: start;
   overflow: hidden;
 }
 
 .calendar-selected-movie img {
-  width: 112px;
+  width: 150px;
   max-width: 100%;
   aspect-ratio: 2 / 3;
   border-radius: 8px;
   object-fit: cover;
   background: #050505;
+}
+
+.history-poster-column {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-width: 0;
+  max-width: 180px;
+}
+
+.history-poster-column img {
+  justify-self: stretch;
+}
+
+.history-plot-tooltip {
+  position: absolute;
+  z-index: 5;
+  left: calc(100% + 12px);
+  top: 0;
+  width: min(320px, 38vw);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 160ms ease, transform 160ms ease;
+  border: 1px solid rgba(240, 198, 77, 0.34);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(42, 29, 24, 0.98), rgba(22, 14, 12, 0.98)),
+    rgba(13, 8, 6, 0.98);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.38);
+  padding: 12px;
+}
+
+.history-poster-column:hover .history-plot-tooltip,
+.history-poster-column:focus-within .history-plot-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.history-plot-tooltip span {
+  margin-bottom: 8px;
+}
+
+.history-plot-tooltip p {
+  color: rgba(255, 247, 232, 0.82);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.app-shell:not(.light-theme) .history-plot-tooltip {
+  border-color: rgba(240, 198, 77, 0.48);
+  background: #0f0a09;
+  color: #fff7e8;
+}
+
+.app-shell:not(.light-theme) .history-plot-tooltip span {
+  border-color: rgba(240, 198, 77, 0.4);
+  background: rgba(132, 74, 255, 0.28);
+  color: #fff7e8;
+}
+
+.app-shell:not(.light-theme) .history-plot-tooltip p {
+  color: #fff7e8;
 }
 
 .calendar-selected-movie span,
@@ -1359,6 +1555,294 @@ h3 {
   overflow-wrap: anywhere;
   color: var(--accent-highlight-text);
   font-weight: 800;
+}
+
+.watch-detail-list {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.watch-detail-list div {
+  display: grid;
+  grid-template-columns: minmax(92px, 0.55fr) minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+}
+
+.watch-detail-list dt {
+  color: rgba(255, 247, 232, 0.56);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.watch-detail-list dd {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.history-card-controls {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.history-card-controls label,
+.history-share-box label,
+.history-advanced-filters label,
+.history-date-range label,
+.history-toolbar label {
+  display: grid;
+  gap: 6px;
+}
+
+.history-card-controls label span,
+.history-share-box label span,
+.history-advanced-filters label span,
+.history-date-range label span,
+.history-toolbar label span,
+.history-privacy-row > span {
+  color: var(--accent-highlight-text);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.history-card-controls textarea,
+.history-share-box textarea,
+.history-share-box select,
+.history-advanced-filters select,
+.history-date-range input,
+.history-toolbar input {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid rgba(255, 247, 232, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  padding: 10px 11px;
+  resize: vertical;
+}
+
+.app-shell:not(.light-theme) .history-advanced-filters select,
+.app-shell:not(.light-theme) .history-advanced-filters select option {
+  background: #1c1312;
+  color: #fff7e8;
+}
+
+.app-shell:not(.light-theme) .history-advanced-filters select {
+  border-color: rgba(240, 198, 77, 0.28);
+  box-shadow: inset 0 0 0 1px rgba(132, 74, 255, 0.12);
+}
+
+.app-shell:not(.light-theme) .history-advanced-filters select:focus {
+  border-color: rgba(240, 198, 77, 0.72);
+  outline: none;
+}
+
+.history-card-controls textarea,
+.history-share-box textarea {
+  min-height: 76px;
+}
+
+.history-privacy-row,
+.history-period-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.poster-privacy {
+  display: grid;
+  gap: 7px;
+}
+
+.poster-privacy > span {
+  margin-bottom: 0;
+}
+
+.poster-privacy button {
+  width: 100%;
+  min-height: 34px;
+  padding: 7px 8px;
+  text-align: center;
+}
+
+.history-privacy-row button,
+.history-period-filter button,
+.history-share-button,
+.watched-history-list button {
+  border: 1px solid var(--accent-highlight-strong);
+  border-radius: 8px;
+  background: rgba(132, 74, 255, 0.12);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 900;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.history-privacy-row button.active,
+.history-period-filter button.active,
+.history-privacy-row button:hover,
+.history-period-filter button:hover,
+.history-share-button:hover,
+.watched-history-list button:hover {
+  border-color: rgba(240, 198, 77, 0.78);
+  background: rgba(240, 198, 77, 0.18);
+}
+
+.history-share-box {
+  display: grid;
+  gap: 9px;
+  border: 1px solid rgba(255, 247, 232, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 10px;
+}
+
+.history-share-box em {
+  color: var(--accent-highlight-text);
+  font-style: normal;
+  font-weight: 900;
+}
+
+.watched-history-panel {
+  display: grid;
+  gap: 12px;
+  border: 1px solid rgba(255, 247, 232, 0.09);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.025)),
+    rgba(27, 18, 13, 0.42);
+  padding: 14px;
+}
+
+.history-toolbar {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) auto minmax(240px, 0.75fr);
+  gap: 12px;
+  align-items: end;
+}
+
+.history-date-range {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.statistics-filter-panel {
+  display: grid;
+  grid-template-columns: auto minmax(240px, 0.6fr);
+  gap: 12px;
+  align-items: end;
+}
+
+.history-advanced-filters {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  align-items: end;
+}
+
+.history-result-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  width: max-content;
+  max-width: 100%;
+  border: 1px solid var(--accent-highlight-strong);
+  border-radius: 8px;
+  background: rgba(132, 74, 255, 0.12);
+  color: var(--accent-highlight-text);
+  font-weight: 900;
+  padding: 7px 10px;
+}
+
+.history-result-summary strong {
+  color: var(--ink);
+}
+
+.watched-history-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.watched-history-list article {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+  border: 1px solid rgba(255, 247, 232, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 9px;
+}
+
+.watched-history-list article.active {
+  border-color: rgba(240, 198, 77, 0.72);
+  background: rgba(240, 198, 77, 0.12);
+}
+
+.watched-history-list img {
+  width: 62px;
+  aspect-ratio: 2 / 3;
+  border-radius: 7px;
+  object-fit: cover;
+  background: #050505;
+}
+
+.watched-history-list div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.watched-history-list span,
+.watched-history-list small,
+.month-movie-list small,
+.month-movie-highlights small,
+.emotional-change-list small,
+.emotional-change-list p {
+  overflow-wrap: anywhere;
+  color: rgba(255, 247, 232, 0.66);
+  line-height: 1.45;
+}
+
+.watched-history-list strong {
+  overflow-wrap: anywhere;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.history-empty-state {
+  grid-column: 1 / -1;
+  color: rgba(255, 247, 232, 0.72);
+  font-weight: 800;
+}
+
+.emotional-change-list {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.emotional-change-list article > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.emotional-change-list article > div strong {
+  color: var(--accent-highlight-text);
 }
 
 .calendar-empty-selection {
@@ -2283,10 +2767,15 @@ h3 {
 }
 
 .movie-card {
+  position: relative;
   display: grid;
   grid-template-columns: 190px minmax(0, 1fr);
   gap: 22px;
   margin-bottom: 22px;
+}
+
+.movie-card-poster {
+  position: relative;
 }
 
 .movie-card img {
@@ -2295,6 +2784,74 @@ h3 {
   border-radius: 8px;
   object-fit: cover;
   background: #050505;
+}
+
+.movie-card-tooltip {
+  position: absolute;
+  z-index: 6;
+  left: calc(100% + 12px);
+  top: 12px;
+  width: min(330px, 42vw);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 160ms ease, transform 160ms ease;
+  border: 1px solid rgba(240, 198, 77, 0.34);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(42, 29, 24, 0.98), rgba(22, 14, 12, 0.98)),
+    rgba(13, 8, 6, 0.98);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.38);
+  padding: 12px;
+}
+
+.movie-card:hover .movie-card-tooltip,
+.movie-card:focus-within .movie-card-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.movie-card-tooltip span {
+  display: inline-flex;
+  width: max-content;
+  max-width: 100%;
+  border: 1px solid rgba(240, 198, 77, 0.4);
+  border-radius: 6px;
+  background: rgba(132, 74, 255, 0.28);
+  color: #fff7e8;
+  padding: 3px 8px;
+  margin-bottom: 8px;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+article.movie-card .movie-card-tooltip p {
+  color: #fff7e8;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.light-theme .movie-card-tooltip,
+.cartoon-theme .movie-card-tooltip {
+  border-color: rgba(255, 181, 76, 0.44);
+  background:
+    linear-gradient(180deg, rgba(255, 252, 236, 0.98), rgba(255, 241, 214, 0.98)),
+    #fff8e7;
+  color: #241208;
+  box-shadow: 0 18px 42px rgba(119, 74, 34, 0.2);
+}
+
+.light-theme .movie-card-tooltip span,
+.cartoon-theme .movie-card-tooltip span {
+  border-color: rgba(118, 57, 188, 0.25);
+  background: rgba(118, 57, 188, 0.12);
+  color: #2e1162;
+}
+
+.light-theme article.movie-card .movie-card-tooltip p,
+.cartoon-theme article.movie-card .movie-card-tooltip p {
+  color: #241208;
 }
 
 .movie-meta,
@@ -2683,6 +3240,8 @@ body.cartoon-theme-page {
 .light-theme .profile-calendar,
 .light-theme .profile-statistics-section,
 .light-theme .profile-month-movies,
+.light-theme .profile-watch-later,
+.light-theme .profile-emotional-section,
 .light-theme .profile-insights,
 .light-theme .ai-profile-panel,
 .light-theme .compact-awards,
@@ -2692,6 +3251,14 @@ body.cartoon-theme-page {
 .light-theme .rating-stats article,
 .light-theme .profile-calendar-grid article,
 .light-theme .month-movie-list article,
+.light-theme .watch-stat-grid article,
+.light-theme .month-movie-highlights article,
+.light-theme .emotional-change-list article,
+.light-theme .watch-calendar-summary,
+.light-theme .watch-month-summary,
+.light-theme .watched-history-panel,
+.light-theme .watched-history-list article,
+.light-theme .history-share-box,
 .light-theme .rating-section-card,
 .light-theme .profile-insight-card,
 .light-theme .ai-profile-card,
@@ -2728,6 +3295,16 @@ body.cartoon-theme-page {
 .light-theme .rating-section-card small,
 .light-theme .profile-insight-card li,
 .light-theme .ai-profile-card small,
+.light-theme .watch-calendar-summary,
+.light-theme .watch-month-summary,
+.light-theme .watch-detail-list dt,
+.light-theme .watched-history-list span,
+.light-theme .watched-history-list small,
+.light-theme .month-movie-list small,
+.light-theme .month-movie-highlights small,
+.light-theme .emotional-change-list small,
+.light-theme .emotional-change-list p,
+.light-theme .history-empty-state,
 .light-theme .compact-award small,
 .light-theme .compact-award.locked em,
 .light-theme .level-step small,
@@ -2755,6 +3332,42 @@ body.cartoon-theme-page {
 
 .light-theme .chip small {
   color: rgba(43, 22, 8, 0.62);
+}
+
+.light-theme .hero {
+  border-color: rgba(122, 91, 22, 0.22);
+  background:
+    radial-gradient(circle at 70% 14%, rgba(133, 73, 255, 0.18), transparent 24rem),
+    radial-gradient(circle at 22% 28%, rgba(255, 191, 47, 0.26), transparent 22rem),
+    linear-gradient(135deg, rgba(255, 248, 219, 0.92), rgba(255, 240, 184, 0.82));
+  box-shadow: 0 18px 44px rgba(98, 64, 0, 0.16);
+}
+
+.light-theme .hero::after {
+  background: linear-gradient(180deg, transparent, rgba(255, 248, 219, 0.42));
+}
+
+.light-theme .hero h1 {
+  color: #2b1608;
+}
+
+.light-theme .hero .eyebrow {
+  border-color: rgba(133, 73, 255, 0.42);
+  background: rgba(133, 73, 255, 0.16);
+  color: #3a166e;
+}
+
+.light-theme .hero .hero-copy {
+  color: rgba(43, 22, 8, 0.72);
+}
+
+.light-theme .hero-watch-now {
+  border-color: rgba(122, 91, 22, 0.2);
+  background: rgba(255, 248, 219, 0.78);
+}
+
+.light-theme .hero-watch-now strong {
+  color: #2b1608;
 }
 
 .light-theme .nav-links a:hover,
@@ -2813,71 +3426,36 @@ body.cartoon-theme-page {
 
 .light-theme .profile-section-list {
   border-color: rgba(122, 91, 22, 0.22);
-  background: rgba(255, 248, 219, 0.68);
-}
-
-.light-theme .hero-content,
-.cartoon-theme .hero-content {
-  border: 1px solid rgba(122, 91, 22, 0.22);
-  border-radius: 8px;
-  background: rgba(255, 248, 219, 0.86);
-  box-shadow: 0 18px 44px rgba(98, 64, 0, 0.16);
-  padding: clamp(18px, 3vw, 34px);
-}
-
-.light-theme .hero,
-.cartoon-theme .hero {
-  border-color: rgba(122, 91, 22, 0.22);
   background:
-    radial-gradient(circle at 70% 14%, rgba(133, 73, 255, 0.18), transparent 24rem),
-    radial-gradient(circle at 22% 28%, rgba(255, 191, 47, 0.26), transparent 22rem),
-    linear-gradient(135deg, rgba(255, 248, 219, 0.92), rgba(255, 240, 184, 0.82));
-  box-shadow: 0 18px 44px rgba(98, 64, 0, 0.16);
+    linear-gradient(135deg, rgba(133, 73, 255, 0.16), rgba(255, 191, 47, 0.18)),
+    rgba(255, 248, 219, 0.86);
+  box-shadow: 0 14px 34px rgba(98, 64, 0, 0.14);
 }
 
-.cartoon-theme .hero {
+.light-theme .profile-section-list button {
+  border-color: rgba(122, 91, 22, 0.16);
+  background: rgba(255, 255, 255, 0.42);
+}
+
+.light-theme .profile-section-list button.active {
+  border-color: rgba(133, 73, 255, 0.46);
   background:
-    radial-gradient(circle at 78% 16%, rgba(255, 107, 154, 0.22), transparent 24rem),
-    radial-gradient(circle at 18% 28%, rgba(25, 167, 206, 0.2), transparent 22rem),
-    linear-gradient(135deg, rgba(255, 250, 232, 0.94), rgba(255, 215, 236, 0.82));
-}
-
-.light-theme .hero::after,
-.cartoon-theme .hero::after {
-  background: linear-gradient(180deg, transparent, rgba(255, 248, 219, 0.42));
-}
-
-.light-theme .hero h1,
-.cartoon-theme .hero h1 {
-  color: #2b1608;
-}
-
-.light-theme .hero .eyebrow,
-.cartoon-theme .hero .eyebrow {
-  border-color: rgba(133, 73, 255, 0.42);
-  background: rgba(133, 73, 255, 0.16);
-  color: #3a166e;
-}
-
-.light-theme .hero-copy,
-.cartoon-theme .hero-copy {
-  color: rgba(43, 22, 8, 0.72);
-}
-
-.light-theme .hero-watch-now,
-.cartoon-theme .hero-watch-now {
-  border-color: rgba(122, 91, 22, 0.2);
-  background: rgba(255, 248, 219, 0.78);
-}
-
-.light-theme .hero-watch-now strong,
-.cartoon-theme .hero-watch-now strong {
-  color: #2b1608;
+    linear-gradient(135deg, rgba(133, 73, 255, 0.18), rgba(255, 191, 47, 0.22)),
+    rgba(255, 255, 255, 0.54);
 }
 
 .light-theme .calendar-widget-main,
 .light-theme .calendar-selected-movie,
-.light-theme .calendar-day {
+.light-theme .calendar-day,
+.light-theme .watched-history-panel,
+.light-theme .watched-history-list article,
+.light-theme .history-card-controls textarea,
+.light-theme .history-share-box textarea,
+.light-theme .history-share-box select,
+.light-theme .history-advanced-filters select,
+.light-theme .history-date-range input,
+.light-theme .history-toolbar input,
+.light-theme .history-share-box {
   border-color: rgba(122, 91, 22, 0.18);
   background: rgba(255, 248, 219, 0.58);
 }
@@ -2892,7 +3470,15 @@ body.cartoon-theme-page {
 .light-theme .calendar-weekdays span,
 .light-theme .calendar-day small,
 .light-theme .calendar-selected-movie p,
-.light-theme .calendar-empty-selection p {
+.light-theme .calendar-empty-selection p,
+.light-theme .watch-detail-list dt,
+.light-theme .watched-history-list span,
+.light-theme .watched-history-list small,
+.light-theme .month-movie-list small,
+.light-theme .month-movie-highlights small,
+.light-theme .emotional-change-list small,
+.light-theme .emotional-change-list p,
+.light-theme .history-empty-state {
   color: rgba(43, 22, 8, 0.72);
 }
 
@@ -2924,6 +3510,8 @@ body.cartoon-theme-page {
 .cartoon-theme .profile-calendar,
 .cartoon-theme .profile-statistics-section,
 .cartoon-theme .profile-month-movies,
+.cartoon-theme .profile-watch-later,
+.cartoon-theme .profile-emotional-section,
 .cartoon-theme .profile-insights,
 .cartoon-theme .ai-profile-panel,
 .cartoon-theme .compact-awards,
@@ -2933,6 +3521,14 @@ body.cartoon-theme-page {
 .cartoon-theme .rating-stats article,
 .cartoon-theme .profile-calendar-grid article,
 .cartoon-theme .month-movie-list article,
+.cartoon-theme .watch-stat-grid article,
+.cartoon-theme .month-movie-highlights article,
+.cartoon-theme .emotional-change-list article,
+.cartoon-theme .watch-calendar-summary,
+.cartoon-theme .watch-month-summary,
+.cartoon-theme .watched-history-panel,
+.cartoon-theme .watched-history-list article,
+.cartoon-theme .history-share-box,
 .cartoon-theme .rating-section-card,
 .cartoon-theme .profile-insight-card,
 .cartoon-theme .ai-profile-card,
@@ -2962,6 +3558,8 @@ body.cartoon-theme-page {
 .cartoon-theme .profile-calendar,
 .cartoon-theme .profile-statistics-section,
 .cartoon-theme .profile-month-movies,
+.cartoon-theme .profile-watch-later,
+.cartoon-theme .profile-emotional-section,
 .cartoon-theme .profile-insights,
 .cartoon-theme .ai-profile-panel,
 .cartoon-theme .compact-awards,
@@ -2971,6 +3569,14 @@ body.cartoon-theme-page {
 .cartoon-theme .rating-stats article,
 .cartoon-theme .profile-calendar-grid article,
 .cartoon-theme .month-movie-list article,
+.cartoon-theme .watch-stat-grid article,
+.cartoon-theme .month-movie-highlights article,
+.cartoon-theme .emotional-change-list article,
+.cartoon-theme .watch-calendar-summary,
+.cartoon-theme .watch-month-summary,
+.cartoon-theme .watched-history-panel,
+.cartoon-theme .watched-history-list article,
+.cartoon-theme .history-share-box,
 .cartoon-theme .rating-section-card,
 .cartoon-theme .profile-insight-card,
 .cartoon-theme .ai-profile-card,
@@ -3070,8 +3676,14 @@ body.cartoon-theme-page {
 
   .rating-stats,
   .calendar-widget,
+  .history-toolbar,
+  .history-advanced-filters,
   .profile-calendar-grid,
   .month-movie-list,
+  .watch-stat-grid,
+  .month-movie-highlights,
+  .watched-history-list,
+  .emotional-change-list,
   .ratings-hub-list,
   .profile-insight-grid,
   .ai-profile-grid,
@@ -3145,6 +3757,14 @@ body.cartoon-theme-page {
 
   .brand img {
     width: 178px;
+  }
+
+  .movie-card-tooltip {
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 12px;
+    width: auto;
   }
 
   .saved-movie {

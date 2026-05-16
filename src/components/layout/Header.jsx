@@ -17,11 +17,6 @@ export default function Header({
   const activeTheme = themeOptions.find((item) => item.id === themeMode) ?? themeOptions[0];
   const activeLanguage = languages.find((item) => item.id === language) ?? languages[0];
 
-  function handleLogoClick(event) {
-    event.preventDefault();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
   function handleThemeSelect(nextThemeMode) {
     onThemeChange(nextThemeMode);
     setOpenMenu('');
@@ -41,7 +36,7 @@ export default function Header({
 
   return (
     <header className="topbar">
-      <a className="brand" href="#top" aria-label="YourFilm" onClick={handleLogoClick}>
+      <a className="brand" href="/#recommendation" aria-label="YourFilm">
         <img src="/images/logo-header.png" alt="YourFilm" />
       </a>
       <nav className="nav-links" aria-label={copy.nav.recommendation}>
@@ -56,8 +51,8 @@ export default function Header({
             </a>
           ))}
         </div>
-        <a className={currentPath === '/profile' ? 'profile-nav-link active' : 'profile-nav-link'} href="/profile">
-          Профиль
+        <a className={currentPath === '/profile' ? 'profile-nav-link active' : 'profile-nav-link'} href="/profile#achievements">
+          ТВОЙ-ПРОФИЛЬ
         </a>
         <div className="header-controls">
           <div className="theme-select control-dropdown">

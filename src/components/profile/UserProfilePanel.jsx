@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { movies } from '../../data/movies.js';
 import { userLevels, userTitles } from '../../data/profile.js';
 import { localizeMovie } from '../../utils/localization.js';
@@ -6,12 +6,102 @@ import WatchlistPreview from '../watchlist/WatchlistPreview.jsx';
 
 const calendarWeekdays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 const watchedMovieSchedule = [
-  { day: 2, movieId: 'the-secret-life-of-walter-mitty', note: 'Вечер для вдохновения' },
-  { day: 6, movieId: 'little-miss-sunshine', note: 'Мягкий фильм после тяжелого дня' },
-  { day: 9, movieId: 'chef', note: 'Уютный просмотр дома' },
-  { day: 14, movieId: 'la-la-land', note: 'Романтичный вечер' },
-  { day: 19, movieId: 'the-pursuit-of-happyness', note: 'Фильм для мотивации' },
-  { day: 23, movieId: 'paddington-2', note: 'Легкое семейное кино' },
+  {
+    day: 2,
+    watchedAt: '2026-05-02',
+    movieId: 'the-secret-life-of-walter-mitty',
+    note: 'Вечер для вдохновения',
+    watchedTime: '20:15',
+    minutesWatched: 114,
+    completed: true,
+    moodBefore: 'Усталость',
+    moodAfter: 'Вдохновение',
+    rating: 9,
+    helpedEmotionally: true,
+    rewatch: false,
+    visibility: 'public',
+    userComment: 'После него захотелось снова планировать путешествия и не откладывать жизнь.',
+  },
+  {
+    day: 6,
+    watchedAt: '2026-05-06',
+    movieId: 'little-miss-sunshine',
+    note: 'Мягкий фильм после тяжелого дня',
+    watchedTime: '19:40',
+    minutesWatched: 101,
+    completed: true,
+    moodBefore: 'Грусть',
+    moodAfter: 'Тепло',
+    rating: 8,
+    helpedEmotionally: true,
+    rewatch: false,
+    visibility: 'public',
+    userComment: 'Очень теплый фильм, будто кто-то аккуратно напомнил: странность тоже сила.',
+  },
+  {
+    day: 9,
+    watchedAt: '2026-05-09',
+    movieId: 'chef',
+    note: 'Уютный просмотр дома',
+    watchedTime: '21:05',
+    minutesWatched: 86,
+    completed: false,
+    moodBefore: 'Тревога',
+    moodAfter: 'Спокойствие',
+    rating: 8,
+    helpedEmotionally: true,
+    rewatch: true,
+    visibility: 'private',
+    userComment: 'Смотрела не до конца, но стало спокойнее. Оставлю для уютного вечера.',
+  },
+  {
+    day: 14,
+    watchedAt: '2026-05-14',
+    movieId: 'la-la-land',
+    note: 'Романтичный вечер',
+    watchedTime: '22:10',
+    minutesWatched: 128,
+    completed: true,
+    moodBefore: 'Ностальгия',
+    moodAfter: 'Меланхолия',
+    rating: 9,
+    helpedEmotionally: false,
+    rewatch: false,
+    visibility: 'public',
+    userComment: 'Красиво, но грустно. Фильм больше про принятие, чем про легкость.',
+  },
+  {
+    day: 19,
+    watchedAt: '2026-05-19',
+    movieId: 'the-pursuit-of-happyness',
+    note: 'Фильм для мотивации',
+    watchedTime: '18:50',
+    minutesWatched: 117,
+    completed: true,
+    moodBefore: 'Неуверенность',
+    moodAfter: 'Собранность',
+    rating: 10,
+    helpedEmotionally: true,
+    rewatch: false,
+    visibility: 'public',
+    userComment: 'Очень помог собраться и перестать себя жалеть.',
+  },
+  {
+    day: 23,
+    watchedAt: '2026-05-23',
+    movieId: 'paddington-2',
+    note: 'Легкое семейное кино',
+    watchedTime: '17:30',
+    minutesWatched: 103,
+    completed: true,
+    moodBefore: 'Напряжение',
+    moodAfter: 'Легкость',
+    rating: 9,
+    helpedEmotionally: true,
+    rewatch: true,
+    visibility: 'public',
+    userComment: 'Идеально, когда хочется чего-то доброго и безопасного.',
+  },
 ];
 
 function formatDateKey(date) {
@@ -27,6 +117,32 @@ function getCalendarLocale(language) {
   if (language === 'en') return 'en-US';
 
   return 'ru-RU';
+}
+
+function formatMonthInLabel(cursor, language) {
+  if (language !== 'ru') {
+    return cursor.toLocaleDateString(getCalendarLocale(language), {
+      month: 'long',
+      year: 'numeric',
+    });
+  }
+
+  const monthNames = [
+    'январе',
+    'феврале',
+    'марте',
+    'апреле',
+    'мае',
+    'июне',
+    'июле',
+    'августе',
+    'сентябре',
+    'октябре',
+    'ноябре',
+    'декабре',
+  ];
+
+  return `${monthNames[cursor.getMonth()]} ${cursor.getFullYear()} г.`;
 }
 
 function getCalendarCells(cursor, watchedByDate) {
@@ -54,6 +170,69 @@ function getCalendarCells(cursor, watchedByDate) {
   return [...emptyCells, ...dayCells];
 }
 
+function getTopValue(items, getValue) {
+  const counts = items.reduce((accumulator, item) => {
+    const value = getValue(item);
+    accumulator[value] = (accumulator[value] ?? 0) + 1;
+    return accumulator;
+  }, {});
+  const [topValue] = Object.entries(counts).sort((a, b) => b[1] - a[1])[0] ?? [];
+
+  return topValue ?? 'Пока нет данных';
+}
+
+function formatWatchHours(minutes) {
+  const hours = Math.floor(minutes / 60);
+  const restMinutes = minutes % 60;
+
+  if (!hours) return `${restMinutes} мин`;
+  if (!restMinutes) return `${hours} ч`;
+
+  return `${hours} ч ${restMinutes} мин`;
+}
+
+function getViewingStreak(entries) {
+  const watchedDays = entries
+    .map((entry) => Math.floor(entry.date.getTime() / 86400000))
+    .sort((a, b) => a - b);
+  let currentStreak = 0;
+  let maxStreak = 0;
+  let previousDay = null;
+
+  watchedDays.forEach((day) => {
+    currentStreak = previousDay === day - 1 ? currentStreak + 1 : 1;
+    maxStreak = Math.max(maxStreak, currentStreak);
+    previousDay = day;
+  });
+
+  return maxStreak;
+}
+
+function isSameMonth(date, cursor) {
+  return date.getFullYear() === cursor.getFullYear() && date.getMonth() === cursor.getMonth();
+}
+
+function isSameWeek(date, cursor) {
+  const start = new Date(cursor);
+  start.setHours(0, 0, 0, 0);
+  start.setDate(start.getDate() - ((start.getDay() + 6) % 7));
+  const end = new Date(start);
+  end.setDate(start.getDate() + 7);
+
+  return date >= start && date < end;
+}
+
+function getProfileSectionFromHash() {
+  const hash = window.location.hash;
+
+  if (hash === '#achievements') return 'my-achievements';
+  if (hash === '#statistics') return 'my-statistics';
+  if (hash === '#watchlist-preview' || hash === '#watch-later') return 'watch-later';
+  if (hash === '#calendar') return 'my-calendar';
+
+  return 'my-achievements';
+}
+
 export default function UserProfilePanel({
   copy,
   language = 'ru',
@@ -61,13 +240,30 @@ export default function UserProfilePanel({
   watchlist = [],
   onRemoveMovie,
 }) {
-  const [activeProfileSection, setActiveProfileSection] = useState('my-calendar');
+  const [activeProfileSection, setActiveProfileSection] = useState(() => getProfileSectionFromHash());
   const [calendarCursor, setCalendarCursor] = useState(() => {
     const today = new Date();
 
     return new Date(today.getFullYear(), today.getMonth(), 1);
   });
   const [selectedCalendarDate, setSelectedCalendarDate] = useState(() => formatDateKey(new Date()));
+  const [historySearch, setHistorySearch] = useState('');
+  const [historyPeriod, setHistoryPeriod] = useState('month');
+  const [historyDateFrom, setHistoryDateFrom] = useState('');
+  const [historyDateTo, setHistoryDateTo] = useState('');
+  const [historyGenre, setHistoryGenre] = useState('all');
+  const [historyMood, setHistoryMood] = useState('all');
+  const [historyRating, setHistoryRating] = useState('all');
+  const [historyVisibility, setHistoryVisibility] = useState('all');
+  const [historyCompletion, setHistoryCompletion] = useState('all');
+  const [statisticsPeriod, setStatisticsPeriod] = useState('month');
+  const [statisticsDateFrom, setStatisticsDateFrom] = useState('');
+  const [statisticsDateTo, setStatisticsDateTo] = useState('');
+  const [historyComments, setHistoryComments] = useState({});
+  const [historyPrivacy, setHistoryPrivacy] = useState({});
+  const [shareFriend, setShareFriend] = useState('Мария');
+  const [shareMessage, setShareMessage] = useState('Я посмотрела этот фильм сегодня, думаю тебе тоже может понравиться');
+  const [shareStatus, setShareStatus] = useState('');
   const unlockedAchievements = profile.achievements.filter((achievement) => achievement.unlocked);
   const ratingScore = profile.xp * 10 + unlockedAchievements.length * 85 + profile.watchedCount * 40;
   const savedMovies = watchlist.length > 0
@@ -75,29 +271,36 @@ export default function UserProfilePanel({
     : profile.watchLater;
   const monthMovies = savedMovies.slice(0, 4);
   const profileSections = [
+    { id: 'my-achievements', label: 'Мои достижения' },
+    { id: 'watch-later', label: 'Смотреть позже' },
     { id: 'my-calendar', label: 'Мой календарь' },
     { id: 'my-statistics', label: 'Моя статистика' },
-    { id: 'my-achievements', label: 'Мои достижения' },
-    { id: 'my-month-movies', label: 'Мои фильмы месяца' },
   ];
+  const allWatchedEntries = watchedMovieSchedule
+    .map((entry) => {
+      const movie = movies.find((item) => item.id === entry.movieId);
+      const date = new Date(entry.watchedAt);
+      const dateKey = formatDateKey(date);
+
+      if (!movie) return null;
+
+      return {
+        ...entry,
+        date,
+        day: date.getDate(),
+        dateKey,
+        movie,
+        userComment: historyComments[dateKey] ?? entry.userComment,
+        visibility: historyPrivacy[dateKey] ?? entry.visibility ?? 'public',
+      };
+    })
+    .filter(Boolean);
+  const watchedEntries = allWatchedEntries.filter((entry) => isSameMonth(entry.date, calendarCursor));
   const watchedByDate = new Map(
-    watchedMovieSchedule
-      .map((entry) => {
-        const movie = movies.find((item) => item.id === entry.movieId);
-        const date = new Date(calendarCursor.getFullYear(), calendarCursor.getMonth(), entry.day);
-
-        if (!movie) return null;
-
-        return [
-          formatDateKey(date),
-          {
-            ...entry,
-            date,
-            movie,
-          },
-        ];
-      })
-      .filter(Boolean),
+    watchedEntries.map((entry) => [
+      entry.dateKey,
+      entry,
+    ]),
   );
   const calendarCells = getCalendarCells(calendarCursor, watchedByDate);
   const selectedWatchedEntry = watchedByDate.get(selectedCalendarDate);
@@ -108,6 +311,89 @@ export default function UserProfilePanel({
   const calendarMonthLabel = calendarCursor.toLocaleDateString(calendarLocale, {
     month: 'long',
     year: 'numeric',
+  });
+  const monthSummaryLabel = formatMonthInLabel(calendarCursor, language);
+  const totalWatchMinutes = watchedEntries.reduce((total, entry) => total + entry.minutesWatched, 0);
+  const emotionallyHelpfulMovies = watchedEntries.filter((entry) => entry.helpedEmotionally);
+  const completedMovies = watchedEntries.filter((entry) => entry.completed);
+  const monthTopGenre = getTopValue(watchedEntries, (entry) => localizeMovie(entry.movie, language).genres[0]);
+  const monthTopMood = getTopValue(watchedEntries, (entry) => entry.moodBefore);
+  const favoriteMonthEntry = [...watchedEntries].sort((a, b) => b.rating - a.rating)[0];
+  const helpfulMonthEntry = emotionallyHelpfulMovies
+    .sort((a, b) => b.rating - a.rating || b.minutesWatched - a.minutesWatched)[0];
+  const viewingStreak = getViewingStreak(watchedEntries);
+  const monthSummary = `В ${monthSummaryLabel} ты посмотрел ${watchedEntries.length} фильмов — ${formatWatchHours(totalWatchMinutes)} кино. Чаще ты выбирал/-ла жанр "${monthTopGenre}". ${emotionallyHelpfulMovies.length} фильмов улучшили настроение.`;
+  const statisticsPeriodEntries = allWatchedEntries.filter((entry) => {
+    if (statisticsPeriod === 'week') return isSameWeek(entry.date, selectedWatchedEntry?.date ?? calendarCursor);
+    if (statisticsPeriod === 'month') return isSameMonth(entry.date, calendarCursor);
+
+    return true;
+  });
+  const statisticsEntries = statisticsPeriodEntries.filter((entry) => {
+    if (statisticsDateFrom && entry.dateKey < statisticsDateFrom) return false;
+    if (statisticsDateTo && entry.dateKey > statisticsDateTo) return false;
+
+    return true;
+  });
+  const statisticsWatchMinutes = statisticsEntries.reduce((total, entry) => total + entry.minutesWatched, 0);
+  const statisticsHelpfulMovies = statisticsEntries.filter((entry) => entry.helpedEmotionally);
+  const statisticsCompletedMovies = statisticsEntries.filter((entry) => entry.completed);
+  const statisticsTopGenre = getTopValue(statisticsEntries, (entry) => localizeMovie(entry.movie, language).genres[0]);
+  const statisticsTopMood = getTopValue(statisticsEntries, (entry) => entry.moodBefore);
+  const statisticsViewingStreak = getViewingStreak(statisticsEntries);
+  const statisticsPeriodLabel = statisticsPeriod === 'week'
+    ? 'за неделю'
+    : statisticsPeriod === 'month'
+      ? 'за месяц'
+      : 'за весь период';
+  const statisticsSummary = `${statisticsPeriodLabel}: ${statisticsEntries.length} фильмов — ${formatWatchHours(statisticsWatchMinutes)} кино. Чаще ты выбирал/-ла жанр "${statisticsTopGenre}". ${statisticsHelpfulMovies.length} фильмов улучшили настроение.`;
+  const historyFilterDate = selectedWatchedEntry?.date ?? calendarCursor;
+  const historyPeriodEntries = allWatchedEntries.filter((entry) => {
+    if (historyPeriod === 'week') return isSameWeek(entry.date, historyFilterDate);
+    if (historyPeriod === 'month') return isSameMonth(entry.date, calendarCursor);
+
+    return true;
+  });
+  const historyDateEntries = historyPeriodEntries.filter((entry) => {
+    if (historyDateFrom && entry.dateKey < historyDateFrom) return false;
+    if (historyDateTo && entry.dateKey > historyDateTo) return false;
+
+    return true;
+  });
+  const historyGenreOptions = Array.from(new Set(
+    allWatchedEntries.flatMap((entry) => localizeMovie(entry.movie, language).genres),
+  ));
+  const historyMoodOptions = Array.from(new Set(
+    allWatchedEntries.flatMap((entry) => [entry.moodBefore, entry.moodAfter]),
+  ));
+  const historyAdvancedEntries = historyDateEntries.filter((entry) => {
+    const movie = localizeMovie(entry.movie, language);
+
+    if (historyGenre !== 'all' && !movie.genres.includes(historyGenre)) return false;
+    if (historyMood !== 'all' && entry.moodBefore !== historyMood && entry.moodAfter !== historyMood) return false;
+    if (historyRating !== 'all' && entry.rating < Number(historyRating)) return false;
+    if (historyVisibility !== 'all' && entry.visibility !== historyVisibility) return false;
+    if (historyCompletion === 'completed' && !entry.completed) return false;
+    if (historyCompletion === 'unfinished' && entry.completed) return false;
+
+    return true;
+  });
+  const normalizedHistorySearch = historySearch.trim().toLowerCase();
+  const filteredHistoryEntries = historyAdvancedEntries.filter((entry) => {
+    if (!normalizedHistorySearch) return true;
+
+    const movie = localizeMovie(entry.movie, language);
+    const searchableText = [
+      movie.title,
+      movie.genres.join(' '),
+      entry.moodBefore,
+      entry.moodAfter,
+      entry.note,
+      entry.userComment,
+      entry.date.toLocaleDateString(calendarLocale, { day: 'numeric', month: 'long', year: 'numeric' }),
+    ].join(' ').toLowerCase();
+
+    return searchableText.includes(normalizedHistorySearch);
   });
   const awardTypes = {
     'watched-count': 'bronze',
@@ -173,6 +459,17 @@ export default function UserProfilePanel({
       description: 'Прогресс в текущем сезонном событии',
     },
   ];
+
+  useEffect(() => {
+    function handleHashChange() {
+      setActiveProfileSection(getProfileSectionFromHash());
+    }
+
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   function handleCalendarMonthChange(direction) {
     const nextMonth = new Date(
@@ -290,6 +587,14 @@ export default function UserProfilePanel({
             <span>Мой календарь</span>
             <strong>История просмотров</strong>
           </div>
+          <div className="watch-calendar-summary">
+            <p>{monthSummary}</p>
+            <div>
+              <span>{watchedEntries.length} фильмов</span>
+              <span>{formatWatchHours(totalWatchMinutes)}</span>
+              <span>{completedMovies.length} досмотрено</span>
+            </div>
+          </div>
           <div className="calendar-widget">
             <div className="calendar-widget-main">
               <div className="calendar-widget-header">
@@ -343,10 +648,55 @@ export default function UserProfilePanel({
             <article className="calendar-selected-movie">
               {selectedWatchedMovie ? (
                 <>
-                  <img
-                    src={selectedWatchedMovie.poster}
-                    alt={`${copy.result.posterAlt} ${selectedWatchedMovie.title}`}
-                  />
+                  <div className="history-poster-column">
+                    <img
+                      src={selectedWatchedMovie.poster}
+                      alt={`${copy.result.posterAlt} ${selectedWatchedMovie.title}`}
+                    />
+                    <div className="history-plot-tooltip">
+                      <span>Полный сюжет</span>
+                      <p>{selectedWatchedMovie.description}</p>
+                    </div>
+                    <div className="history-privacy-row poster-privacy">
+                      <span>Видимость</span>
+                      <button
+                        className={selectedWatchedEntry.visibility === 'friends' ? 'active' : ''}
+                        type="button"
+                        onClick={() => {
+                          setHistoryPrivacy((current) => ({
+                            ...current,
+                            [selectedWatchedEntry.dateKey]: 'friends',
+                          }));
+                        }}
+                      >
+                        Для друзей
+                      </button>
+                      <button
+                        className={selectedWatchedEntry.visibility === 'public' ? 'active' : ''}
+                        type="button"
+                        onClick={() => {
+                          setHistoryPrivacy((current) => ({
+                            ...current,
+                            [selectedWatchedEntry.dateKey]: 'public',
+                          }));
+                        }}
+                      >
+                        Для всех
+                      </button>
+                      <button
+                        className={selectedWatchedEntry.visibility === 'private' ? 'active' : ''}
+                        type="button"
+                        onClick={() => {
+                          setHistoryPrivacy((current) => ({
+                            ...current,
+                            [selectedWatchedEntry.dateKey]: 'private',
+                          }));
+                        }}
+                      >
+                        Только для себя
+                      </button>
+                    </div>
+                  </div>
                   <div>
                     <span>
                       {selectedWatchedEntry.date.toLocaleDateString(calendarLocale, {
@@ -356,7 +706,87 @@ export default function UserProfilePanel({
                     </span>
                     <h3>{selectedWatchedMovie.title}</h3>
                     <p>{selectedWatchedMovie.shortReason}</p>
-                    <small>{selectedWatchedEntry.note}</small>
+                    <dl className="watch-detail-list">
+                      <div>
+                        <dt>Дата</dt>
+                        <dd>
+                          {selectedWatchedEntry.date.toLocaleDateString(calendarLocale, {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric',
+                          })}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>Время просмотра</dt>
+                        <dd>{selectedWatchedEntry.watchedTime}</dd>
+                      </div>
+                      <div>
+                        <dt>Длительность</dt>
+                        <dd>{formatWatchHours(selectedWatchedEntry.minutesWatched)}</dd>
+                      </div>
+                      <div>
+                        <dt>Жанр</dt>
+                        <dd>{selectedWatchedMovie.genres.join(', ')}</dd>
+                      </div>
+                      <div>
+                        <dt>Статус</dt>
+                        <dd>{selectedWatchedEntry.completed ? 'Досмотрено' : 'Не досмотрено'}</dd>
+                      </div>
+                      <div>
+                        <dt>Настроение</dt>
+                        <dd>{selectedWatchedEntry.moodBefore} → {selectedWatchedEntry.moodAfter}</dd>
+                      </div>
+                      <div>
+                        <dt>Оценка</dt>
+                        <dd>{selectedWatchedEntry.rating}/10</dd>
+                      </div>
+                    </dl>
+                    <small>
+                      {selectedWatchedEntry.helpedEmotionally ? 'Помог эмоционально' : 'Не изменил состояние'} · {selectedWatchedEntry.note}
+                    </small>
+                    <div className="history-card-controls">
+                      <label>
+                        <span>Комментарий</span>
+                        <textarea
+                          value={selectedWatchedEntry.userComment}
+                          onChange={(event) => {
+                            setHistoryComments((current) => ({
+                              ...current,
+                              [selectedWatchedEntry.dateKey]: event.target.value,
+                            }));
+                          }}
+                        />
+                      </label>
+                      <div className="history-share-box">
+                        <label>
+                          <span>Друг</span>
+                          <select
+                            value={shareFriend}
+                            onChange={(event) => setShareFriend(event.target.value)}
+                          >
+                            <option>Мария</option>
+                            <option>София</option>
+                            <option>Даниил</option>
+                          </select>
+                        </label>
+                        <label>
+                          <span>Сообщение</span>
+                          <textarea
+                            value={shareMessage}
+                            onChange={(event) => setShareMessage(event.target.value)}
+                          />
+                        </label>
+                        <button
+                          className="history-share-button"
+                          type="button"
+                          onClick={() => setShareStatus(`Фильм отправлен: ${shareFriend}`)}
+                        >
+                          Поделиться с другом
+                        </button>
+                        {shareStatus ? <em>{shareStatus}</em> : null}
+                      </div>
+                    </div>
                   </div>
                 </>
               ) : (
@@ -368,6 +798,157 @@ export default function UserProfilePanel({
               )}
             </article>
           </div>
+          <div className="watched-history-panel">
+            <div className="leaderboard-heading">
+              <span>История</span>
+              <strong>Просмотренные фильмы</strong>
+            </div>
+            <div className="history-toolbar">
+              <label>
+                <span>Поиск по истории</span>
+                <input
+                  type="search"
+                  value={historySearch}
+                  placeholder="Название, жанр, настроение, дата, комментарий"
+                  onChange={(event) => setHistorySearch(event.target.value)}
+                />
+              </label>
+              <div className="history-period-filter" aria-label="Фильтр периода истории просмотров">
+                <button
+                  className={historyPeriod === 'week' ? 'active' : ''}
+                  type="button"
+                  onClick={() => setHistoryPeriod('week')}
+                >
+                  Неделя
+                </button>
+                <button
+                  className={historyPeriod === 'month' ? 'active' : ''}
+                  type="button"
+                  onClick={() => setHistoryPeriod('month')}
+                >
+                  Месяц
+                </button>
+                <button
+                  className={historyPeriod === 'all' ? 'active' : ''}
+                  type="button"
+                  onClick={() => setHistoryPeriod('all')}
+                >
+                  Весь период
+                </button>
+              </div>
+              <div className="history-date-range">
+                <label>
+                  <span>С</span>
+                  <input
+                    type="date"
+                    value={historyDateFrom}
+                    onChange={(event) => setHistoryDateFrom(event.target.value)}
+                  />
+                </label>
+                <label>
+                  <span>До</span>
+                  <input
+                    type="date"
+                    value={historyDateTo}
+                    onChange={(event) => setHistoryDateTo(event.target.value)}
+                  />
+                </label>
+              </div>
+            </div>
+            <div className="history-advanced-filters">
+              <label>
+                <span>Жанр</span>
+                <select value={historyGenre} onChange={(event) => setHistoryGenre(event.target.value)}>
+                  <option value="all">Все жанры</option>
+                  {historyGenreOptions.map((genre) => (
+                    <option value={genre} key={genre}>{genre}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                <span>Настроение</span>
+                <select value={historyMood} onChange={(event) => setHistoryMood(event.target.value)}>
+                  <option value="all">Все настроения</option>
+                  {historyMoodOptions.map((mood) => (
+                    <option value={mood} key={mood}>{mood}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                <span>Оценка</span>
+                <select value={historyRating} onChange={(event) => setHistoryRating(event.target.value)}>
+                  <option value="all">Любая оценка</option>
+                  <option value="10">10/10</option>
+                  <option value="9">9+ / 10</option>
+                  <option value="8">8+ / 10</option>
+                </select>
+              </label>
+              <label>
+                <span>Видимость</span>
+                <select value={historyVisibility} onChange={(event) => setHistoryVisibility(event.target.value)}>
+                  <option value="all">Все</option>
+                  <option value="friends">Для друзей</option>
+                  <option value="public">Для всех</option>
+                  <option value="private">Только для себя</option>
+                </select>
+              </label>
+              <label>
+                <span>Просмотр</span>
+                <select value={historyCompletion} onChange={(event) => setHistoryCompletion(event.target.value)}>
+                  <option value="all">Все</option>
+                  <option value="completed">Досмотренные</option>
+                  <option value="unfinished">Не досмотренные</option>
+                </select>
+              </label>
+            </div>
+            <div className="history-result-summary">
+              <strong>{filteredHistoryEntries.length}</strong>
+              <span>фильмов найдено</span>
+            </div>
+            <div className="watched-history-list">
+              {filteredHistoryEntries.map((entry) => {
+                const movie = localizeMovie(entry.movie, language);
+
+                return (
+                  <article
+                    className={selectedCalendarDate === entry.dateKey ? 'active' : ''}
+                    key={entry.dateKey}
+                  >
+                    <img src={movie.poster} alt={`${copy.result.posterAlt} ${movie.title}`} />
+                    <div>
+                      <span>{entry.date.toLocaleDateString(calendarLocale, { day: 'numeric', month: 'long' })}</span>
+                      <strong>{movie.title}</strong>
+                      <small>{formatWatchHours(entry.minutesWatched)} · {entry.completed ? 'досмотрено' : 'не досмотрено'} · {entry.rating}/10</small>
+                      <small>
+                        {entry.visibility === 'private'
+                          ? 'Только для себя'
+                          : entry.visibility === 'friends'
+                            ? 'Для друзей'
+                            : 'Для всех'} · {entry.moodBefore} → {entry.moodAfter}
+                      </small>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCalendarCursor(new Date(entry.date.getFullYear(), entry.date.getMonth(), 1));
+                          setSelectedCalendarDate(entry.dateKey);
+                        }}
+                      >
+                        Открыть карточку
+                      </button>
+                    </div>
+                  </article>
+                );
+              })}
+              {filteredHistoryEntries.length === 0 ? (
+                <p className="history-empty-state">По этому поиску просмотров пока нет.</p>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {activeProfileSection === 'watch-later' ? (
+        <div className="profile-watch-later">
           <WatchlistPreview
             copy={copy}
             language={language}
@@ -381,22 +962,76 @@ export default function UserProfilePanel({
         <div className="profile-statistics-section">
           <div className="leaderboard-heading">
             <span>Моя статистика</span>
-            <strong>{ratingScore} баллов</strong>
+            <strong>{formatWatchHours(statisticsWatchMinutes)} {statisticsPeriodLabel}</strong>
           </div>
-          <div className="rating-stats">
+          <div className="statistics-filter-panel">
+            <div className="history-period-filter" aria-label="Фильтр периода статистики">
+              <button
+                className={statisticsPeriod === 'week' ? 'active' : ''}
+                type="button"
+                onClick={() => setStatisticsPeriod('week')}
+              >
+                Неделя
+              </button>
+              <button
+                className={statisticsPeriod === 'month' ? 'active' : ''}
+                type="button"
+                onClick={() => setStatisticsPeriod('month')}
+              >
+                Месяц
+              </button>
+              <button
+                className={statisticsPeriod === 'all' ? 'active' : ''}
+                type="button"
+                onClick={() => setStatisticsPeriod('all')}
+              >
+                Весь период
+              </button>
+            </div>
+            <div className="history-date-range">
+              <label>
+                <span>С</span>
+                <input
+                  type="date"
+                  value={statisticsDateFrom}
+                  onChange={(event) => setStatisticsDateFrom(event.target.value)}
+                />
+              </label>
+              <label>
+                <span>До</span>
+                <input
+                  type="date"
+                  value={statisticsDateTo}
+                  onChange={(event) => setStatisticsDateTo(event.target.value)}
+                />
+              </label>
+            </div>
+          </div>
+          <p className="watch-month-summary">{statisticsSummary}</p>
+          <div className="watch-stat-grid">
             <article>
               <span>Фильмы</span>
-              <strong>{profile.watchedCount}</strong>
+              <strong>{statisticsEntries.length}</strong>
             </article>
             <article>
-              <span>Награды</span>
-              <strong>
-                {unlockedAchievements.length}/{profile.achievements.length}
-              </strong>
+              <span>Часы просмотра</span>
+              <strong>{formatWatchHours(statisticsWatchMinutes)}</strong>
             </article>
             <article>
-              <span>Вектор</span>
-              <strong>{profile.favoriteMood}</strong>
+              <span>Досмотрено</span>
+              <strong>{statisticsCompletedMovies.length}</strong>
+            </article>
+            <article>
+              <span>Жанр периода</span>
+              <strong>{statisticsTopGenre}</strong>
+            </article>
+            <article>
+              <span>Настроение периода</span>
+              <strong>{statisticsTopMood}</strong>
+            </article>
+            <article>
+              <span>Серия дней</span>
+              <strong>{statisticsViewingStreak}</strong>
             </article>
           </div>
           {cinemaProfilePanel}
@@ -404,19 +1039,33 @@ export default function UserProfilePanel({
         </div>
       ) : null}
 
-      {activeProfileSection === 'my-month-movies' ? (
-        <div className="profile-month-movies">
+      {activeProfileSection === 'my-emotional-changes' ? (
+        <div className="profile-emotional-section">
           <div className="leaderboard-heading">
-            <span>Мои фильмы месяца</span>
-            <strong>{monthMovies.length} в подборке</strong>
+            <span>Эмоции после просмотра</span>
+            <strong>{emotionallyHelpfulMovies.length} улучшили состояние</strong>
           </div>
-          <div className="month-movie-list">
-            {monthMovies.map((movie, index) => (
-              <article key={movie}>
-                <span>{String(index + 1).padStart(2, '0')}</span>
-                <strong>{movie}</strong>
-              </article>
-            ))}
+          <div className="emotional-change-list">
+            {watchedEntries.map((entry) => {
+              const movie = localizeMovie(entry.movie, language);
+
+              return (
+                <article key={entry.dateKey}>
+                  <div>
+                    <span>{entry.moodBefore}</span>
+                    <strong>→</strong>
+                    <span>{entry.moodAfter}</span>
+                  </div>
+                  <h3>{movie.title}</h3>
+                  <p>
+                    {entry.helpedEmotionally
+                      ? 'Фильм помог эмоционально'
+                      : 'Фильм не изменил состояние'}
+                  </p>
+                  <small>{entry.rating}/10 · {formatWatchHours(entry.minutesWatched)}</small>
+                </article>
+              );
+            })}
           </div>
         </div>
       ) : null}

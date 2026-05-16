@@ -31,6 +31,11 @@ export default function HeroSection({ copy, language = 'ru' }) {
             <span>Сейчас смотрят</span>
             <strong>Эти фильмы смотрят твои друзья</strong>
           </div>
+          <div className="watch-now-covers" aria-hidden="true">
+            {heroMovies.slice(0, 4).map((movie) => (
+              <img src={movie.poster} alt="" key={movie.id} />
+            ))}
+          </div>
           <a href="#recommendation">Посмотреть</a>
         </div>
       </aside>
